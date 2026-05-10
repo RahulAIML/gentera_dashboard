@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   title: "Gentera Intelligence Platform",
   description: "Plataforma de Inteligencia Conversacional para Simulaciones de Roleplay",
   icons: { icon: "/favicon.ico" },
+  // Prevent Chrome / Google Translate from rewriting the DOM before
+  // React hydrates — the user toggles language inside the app instead.
+  other: {
+    google: "notranslate",
+  },
 };
 
 export const viewport: Viewport = {
@@ -22,7 +27,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${inter.variable} h-full`} suppressHydrationWarning>
+    <html
+      lang="es"
+      translate="no"
+      className={`${inter.variable} h-full notranslate`}
+      suppressHydrationWarning
+    >
       <body className="h-full min-h-screen bg-surface-900 text-text-primary antialiased">
         <Providers>{children}</Providers>
       </body>
