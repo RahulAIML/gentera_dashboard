@@ -59,29 +59,13 @@ export default function SimulationPage() {
         {/* Trend */}
         <ScoreTrendChart data={trend} loading={isLoading} />
 
-        {/* Table */}
+        {/* Simulations Table */}
         <div className="rounded-2xl border border-border bg-surface-900/60 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-wrap gap-3">
-            <div>
-              <h3 className="text-sm font-semibold text-text-primary">{t.nav.simulations}</h3>
-              <p className="text-xs text-text-muted mt-0.5">{fmtNumber(filtered.length)} {t.common.results}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                {(["date", "score", "user"] as const).map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => { setSort(s); setPage(1); }}
-                    className={cn(
-                      "text-xs px-2.5 py-1 rounded-lg border transition-all",
-                      sort === s
-                        ? "bg-brand-500/10 border-brand-500/40 text-brand-400"
-                        : "border-border text-text-muted hover:border-border-strong"
-                    )}
-                  >
-                    {s === "date" ? t.table.date : s === "score" ? t.table.score : t.table.user}
-                  </button>
-                ))}
+          <div className="px-5 py-4 border-b border-border space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-text-primary">{t.nav.simulations}</h3>
+                <p className="text-xs text-text-muted mt-0.5">{fmtNumber(filtered.length)} {t.common.results}</p>
               </div>
               <div className="flex items-center gap-2 bg-surface-800 border border-border rounded-lg px-3 py-1.5">
                 <Search className="w-3.5 h-3.5 text-text-muted" />
@@ -89,9 +73,25 @@ export default function SimulationPage() {
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                   placeholder={t.common.search}
-                  className="bg-transparent text-xs text-text-primary placeholder:text-text-muted outline-none w-48"
+                  className="bg-transparent text-xs text-text-primary placeholder:text-text-muted outline-none w-40"
                 />
               </div>
+            </div>
+            <div className="flex items-center gap-1">
+              {(["date", "score", "user"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => { setSort(s); setPage(1); }}
+                  className={cn(
+                    "text-xs px-2.5 py-1 rounded-lg border transition-all",
+                    sort === s
+                      ? "bg-brand-500/10 border-brand-500/40 text-brand-400"
+                      : "border-border text-text-muted hover:border-border-strong"
+                  )}
+                >
+                  {s === "date" ? t.table.date : s === "score" ? t.table.score : t.table.user}
+                </button>
+              ))}
             </div>
           </div>
 

@@ -68,60 +68,39 @@ export default function TrendsPage() {
 
       <div className="p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto">
         {/* KPIs */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KPICard title={t.kpi.totalSimulations} value={fmtNumber(kpis.totalSimulations)} icon={Activity} accent="brand" index={0} loading={isLoading} />
           <KPICard title={t.kpi.activeDays} value={fmtNumber(monthlyTrend.length)} icon={Calendar} accent="violet" index={1} loading={isLoading} />
           <KPICard title={t.kpi.avgScore} value={`${kpis.averageScore.toFixed(0)}%`} delta={kpis.trend.scoreDelta} trend={kpis.trend.scoreDelta >= 0 ? "up" : "down"} icon={TrendingUp} accent="emerald" index={2} loading={isLoading} />
           <KPICard title={t.kpi.passRate} value={fmtPercent(kpis.passRate)} delta={kpis.trend.passRateDelta} trend={kpis.trend.passRateDelta >= 0 ? "up" : "down"} icon={BarChart3} accent="cyan" index={3} loading={isLoading} />
         </div>
 
-        {/* Granularity toggle */}
-        <div className="flex items-center gap-2">
-          {(["monthly", "weekly"] as const).map((g) => (
-            <button
-              key={g}
-              onClick={() => setGranularity(g)}
-              className={cn(
-                "text-xs px-3 py-1.5 rounded-lg border transition-all",
-                granularity === g
-                  ? "bg-brand-500/10 border-brand-500/40 text-brand-400"
-                  : "border-border text-text-muted hover:border-border-strong"
-              )}
-            >
-              {g === "monthly" ? t.filters.monthly : t.filters.weekly}
-            </button>
-          ))}
+        {/* Main Content: Trend Chart */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            {(["monthly", "weekly"] as const).map((g) => (
+              <button
+                key={g}
+                onClick={() => setGranularity(g)}
+                className={cn(
+                  "text-xs px-3 py-1.5 rounded-lg border transition-all",
+                  granularity === g
+                    ? "bg-brand-500/10 border-brand-500/40 text-brand-400"
+                    : "border-border text-text-muted hover:border-border-strong"
+                )}
+              >
+                {g === "monthly" ? t.filters.monthly : t.filters.weekly}
+              </button>
+            ))}
+          </div>
+          <ScoreTrendChart data={trendData} loading={isLoading} />
         </div>
 
-        {/* Score trend */}
-        <ScoreTrendChart data={trendData} loading={isLoading} />
-
-        {/* Volume chart */}
-        <div className="rounded-2xl border border-border bg-surface-900/60 p-5">
-          <h3 className="text-sm font-semibold text-text-primary mb-1">{t.kpi.totalSimulations}</h3>
-          <p className="text-xs text-text-muted mb-5">{t.kpi.uniqueUsers}</p>
-          {trendData.length === 0 ? (
-            <div className="h-[220px] flex items-center justify-center text-text-muted text-sm">{t.common.noData}</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={trendData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="label" tick={{ fill: "#6b6f8e", fontSize: 11 }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                <YAxis tick={{ fill: "#6b6f8e", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<VolumeTooltip />} />
-                <Legend wrapperStyle={{ fontSize: 11, color: "#a8aac8", paddingTop: 8 }} formatter={(v) => v === "simulations" ? t.kpi.totalSimulations : t.kpi.uniqueUsers} />
-                <Bar dataKey="simulations" name="simulations" fill="#6366f1" fillOpacity={0.7} radius={[4, 4, 0, 0]} />
-                <Bar dataKey="uniqueUsers" name="uniqueUsers" fill="#8b5cf6" fillOpacity={0.6} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-
-        {/* Heatmap */}
+        {/* Secondary Insight: Activity Heatmap */}
         {heatmap.some((c) => c.count > 0) && (
           <div className="rounded-2xl border border-border bg-surface-900/60 p-5">
-            <h3 className="text-sm font-semibold text-text-primary mb-1">{t.nav.trends}</h3>
-            <p className="text-xs text-text-muted mb-5">{t.charts.activityBreakdown}</p>
+            <h3 className="text-sm font-semibold text-text-primary mb-1">{t.charts.activityBreakdown}</h3>
+            <p className="text-xs text-text-muted mb-5">{t.charts.simAbbrev} distribution by day and hour</p>
             <div className="overflow-x-auto">
               <div className="flex gap-2 min-w-max">
                 <div className="flex flex-col pt-6 gap-0.5">

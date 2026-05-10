@@ -112,10 +112,11 @@ export default function LeaderboardPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-          <div className="xl:col-span-2">
+        {/* Rankings Table + Score Distribution */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2">
             {tab === "users" ? (
-              <LeaderboardTable entries={userLeaderboard} loading={isLoading} maxRows={50} />
+              <LeaderboardTable entries={userLeaderboard} loading={isLoading} maxRows={20} />
             ) : (
               <div className="rounded-2xl border border-border bg-surface-900/60 overflow-hidden">
                 <div className="px-5 py-4 border-b border-border">
@@ -124,20 +125,18 @@ export default function LeaderboardPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      {["#", t.table.activity, t.kpi.totalSimulations, t.kpi.avgScore, t.kpi.passRate, t.kpi.uniqueUsers].map((h) => (
-                        <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-text-muted font-semibold whitespace-nowrap">{h}</th>
+                      {["#", t.table.activity, t.kpi.avgScore, t.kpi.passRate].map((h) => (
+                        <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-text-muted font-semibold">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {activityLeaderboard.map((a, i) => (
+                    {activityLeaderboard.slice(0, 20).map((a, i) => (
                       <motion.tr key={a.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="border-b border-border last:border-0 hover:bg-surface-800/30 transition-colors">
                         <td className="px-4 py-3"><span className={cn("text-sm font-bold", i === 0 ? "text-amber-400" : i === 1 ? "text-slate-300" : i === 2 ? "text-amber-600" : "text-text-muted")}>{a.rank}</span></td>
-                        <td className="px-4 py-3"><span className="text-xs font-medium text-text-primary max-w-[200px] truncate block" title={a.name}>{a.name}</span></td>
-                        <td className="px-4 py-3"><span className="text-xs font-mono text-text-secondary">{a.simulations}</span></td>
+                        <td className="px-4 py-3"><span className="text-xs font-medium text-text-primary truncate" title={a.name}>{a.name}</span></td>
                         <td className="px-4 py-3"><span className={cn("text-xs font-mono font-bold", a.avgScore >= 70 ? "text-emerald-400" : a.avgScore >= 50 ? "text-amber-400" : "text-rose-400")}>{a.avgScore.toFixed(0)}%</span></td>
                         <td className="px-4 py-3"><span className="text-xs text-text-secondary">{fmtPercent(a.passRate)}</span></td>
-                        <td className="px-4 py-3"><span className="text-xs font-mono text-text-muted">{a.uniqueUsers}</span></td>
                       </motion.tr>
                     ))}
                   </tbody>
