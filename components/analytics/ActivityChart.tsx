@@ -6,7 +6,7 @@ import { fmtPercent } from "@/lib/utils/formatters";
 
 interface Props { data: ActivityKPI[]; loading?: boolean; metric?: "simulationCount" | "averageScore" | "passRate"; }
 
-const PALETTE = ["#f59e0b","#0ea5e9","#10b981","#8b5cf6","#f43f5e","#38bdf8","#34d399","#fbbf24","#a78bfa"];
+const PALETTE = ["#6366f1","#8b5cf6","#10b981","#60a5fa","#fb7185","#22d3ee","#34d399","#fbbf24","#a78bfa"];
 
 function Tip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
@@ -68,9 +68,9 @@ export function ActivityChart({ data, loading, metric = "simulationCount" }: Pro
       </div>
       <ResponsiveContainer width="100%" height={228}>
         <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 24, left: 4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,32,56,0.8)" horizontal={false} />
-          <XAxis type="number" tick={{ fill: "#4a6480", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis type="category" dataKey="shortName" tick={{ fill: "#8ba4c4", fontSize: 10 }} axisLine={false} tickLine={false} width={144} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
+          <XAxis type="number" tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis type="category" dataKey="shortName" tick={{ fill: "#a8aac8", fontSize: 10 }} axisLine={false} tickLine={false} width={144} />
           <Tooltip content={<Tip />} />
           <Bar dataKey="val" radius={[0, 6, 6, 0]} maxBarSize={26}>
             {chartData.map((e, i) => (

@@ -20,13 +20,13 @@ function RoundCard({ round, index }: RoundCardProps) {
   const scoreIcon = round.score === 1
     ? <CheckCircle className="w-4 h-4 text-emerald-400" />
     : round.score === 0
-    ? <XCircle className="w-4 h-4 text-red-400" />
+    ? <XCircle className="w-4 h-4 text-rose-400" />
     : <Minus className="w-4 h-4 text-text-muted" />;
 
   const borderColor = round.score === 1
     ? "border-emerald-500/30 bg-emerald-500/5"
     : round.score === 0
-    ? "border-red-500/30 bg-red-500/5"
+    ? "border-rose-500/30 bg-rose-500/5"
     : "border-border";
 
   return (
@@ -53,7 +53,7 @@ function RoundCard({ round, index }: RoundCardProps) {
           {round.applicable && (
             <span className={cn(
               "text-[10px] font-bold px-2 py-0.5 rounded-full",
-              round.score === 1 ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
+              round.score === 1 ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
             )}>
               {round.score === 1 ? "✓ Aprobó" : "✗ No aprobó"}
             </span>
@@ -73,7 +73,7 @@ function RoundCard({ round, index }: RoundCardProps) {
           >
             <div className="px-4 pb-4 space-y-3">
               {/* AI Prompt */}
-              <div className="rounded-lg bg-surface-700 p-3">
+              <div className="rounded-lg bg-surface-800 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Bot className="w-3.5 h-3.5 text-violet-400" />
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-400">Escenario IA</span>
@@ -131,7 +131,7 @@ export function ConversationViewer({ simulation, onClose }: ConversationViewerPr
           <div className="flex items-center gap-3 flex-wrap">
             <div className="text-center">
               <div className="text-2xl font-bold tabular-nums" style={{
-                color: simulation.score >= 80 ? "#10b981" : simulation.score >= 60 ? "#3b82f6" : "#ef4444"
+                color: simulation.score >= 80 ? "#34d399" : simulation.score >= 60 ? "#818cf8" : "#fb7185"
               }}>
                 {simulation.score}%
               </div>
@@ -142,7 +142,7 @@ export function ConversationViewer({ simulation, onClose }: ConversationViewerPr
               "px-3 py-1.5 rounded-lg text-xs font-semibold border",
               simulation.passed
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                : "bg-red-500/10 text-red-400 border-red-500/30"
+                : "bg-rose-500/10 text-rose-400 border-rose-500/30"
             )}>
               {simulation.passed ? "✓ Diagnóstico Aprobatorio" : "✗ No Aprobatorio"}
             </div>
@@ -155,15 +155,15 @@ export function ConversationViewer({ simulation, onClose }: ConversationViewerPr
           </div>
         </div>
 
-        {/* Score breakdown */}
+        {/* Score breakdown — rounds 1–5 only */}
         <div className="mt-4 flex gap-1.5">
-          {simulation.rounds.map((r) => (
+          {simulation.rounds.slice(0, 5).map((r) => (
             <div
               key={r.index}
               className={cn(
                 "flex-1 h-1.5 rounded-full",
-                !r.applicable ? "bg-surface-600" :
-                r.score === 1 ? "bg-emerald-400" : "bg-red-400"
+                !r.applicable ? "bg-surface-700" :
+                r.score === 1 ? "bg-emerald-400" : "bg-rose-400"
               )}
               title={`Interacción ${r.index}: ${!r.applicable ? "N/A" : r.score === 1 ? "Aprobó" : "No aprobó"}`}
             />
@@ -171,14 +171,17 @@ export function ConversationViewer({ simulation, onClose }: ConversationViewerPr
         </div>
       </div>
 
-      {/* Rounds */}
+      {/* Rounds — skip round 6 (always "No aplica") */}
       <div className="space-y-2">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-text-muted px-1">
           Transcripción Conversacional
         </h4>
-        {simulation.rounds.map((r, i) => (
-          <RoundCard key={r.index} round={r} index={i} />
-        ))}
+        {simulation.rounds
+          .filter((r) => r.applicable || r.index <= 5)
+          .filter((r) => r.index <= 5)
+          .map((r, i) => (
+            <RoundCard key={r.index} round={r} index={i} />
+          ))}
       </div>
     </div>
   );

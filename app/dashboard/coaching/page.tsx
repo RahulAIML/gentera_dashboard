@@ -66,7 +66,7 @@ function UserCoachingCard({ user, index, simulations }: { user: UserKPI; index: 
             <span className={cn(
               "text-xs font-semibold",
               user.averageScore >= 70 ? "text-emerald-400" :
-              user.averageScore >= 50 ? "text-amber-400" : "text-red-400"
+              user.averageScore >= 50 ? "text-amber-400" : "text-rose-400"
             )}>
               {user.averageScore.toFixed(0)}% promedio
             </span>
@@ -143,7 +143,7 @@ export default function CoachingPage() {
   }, [filter, userKPIs, needsCoaching, topPerformers]);
 
   return (
-    <div className="min-h-full bg-surface-900">
+    <div className="min-h-full bg-surface-950">
       <TopBar title="Coaching IA" subtitle="Diagnóstico personalizado por asesor" />
 
       <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">
@@ -202,7 +202,7 @@ export default function CoachingPage() {
                   className={cn(
                     "text-xs px-3 py-1.5 rounded-lg border transition-all",
                     filter === f
-                      ? "bg-brand-500/20 border-brand-500 text-brand-400"
+                      ? "bg-brand-500/12 border-brand-500/50 text-brand-400"
                       : "border-border text-text-muted hover:border-surface-300"
                   )}
                 >

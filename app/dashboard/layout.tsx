@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { FilterBar } from "@/components/layout/FilterBar";
+import { AICopilot } from "@/components/ai/AICopilot";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -15,6 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
+      <AICopilot />
     </div>
   );
 }

@@ -9,23 +9,23 @@ interface Props { entries: LeaderboardEntry[]; loading?: boolean; maxRows?: numb
 
 const BADGE_ICONS = { gold: Crown, silver: Trophy, bronze: Medal };
 const BADGE_COLORS = {
-  gold:   "from-brand-400 to-brand-600 ring-brand-500/40",
+  gold:   "from-amber-400 to-amber-600 ring-amber-500/40",
   silver: "from-slate-300 to-slate-500 ring-slate-400/30",
   bronze: "from-amber-600 to-amber-800 ring-amber-700/30",
 };
 const AVATAR_COLORS = [
-  "from-brand-500 to-blue-600",
+  "from-brand-500 to-violet-600",
   "from-violet-500 to-blue-600",
-  "from-emerald-500 to-blue-600",
+  "from-emerald-500 to-brand-600",
   "from-blue-500 to-violet-600",
-  "from-coral-500 to-violet-600",
+  "from-brand-600 to-cyan-600",
 ];
 
 function ScoreBar({ score }: { score: number }) {
-  const color = score >= 80 ? "#10b981" : score >= 60 ? "#f59e0b" : score >= 40 ? "#0ea5e9" : "#f43f5e";
+  const color = score >= 80 ? "#10b981" : score >= 60 ? "#818cf8" : score >= 40 ? "#fbbf24" : "#fb7185";
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 bg-surface-700 rounded-full h-1.5 overflow-hidden max-w-[72px]">
+      <div className="flex-1 bg-surface-800 rounded-full h-1.5 overflow-hidden max-w-[72px]">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${score}%` }}
@@ -86,7 +86,7 @@ export function LeaderboardTable({ entries, loading, maxRows = 20 }: Props) {
             ? "text-emerald-400 bg-emerald-500/10"
             : entry.passRate >= 0.5
             ? "text-brand-400 bg-brand-500/10"
-            : "text-coral-400 bg-coral-500/10";
+            : "text-rose-400 bg-rose-500/10";
 
           return (
             <motion.div

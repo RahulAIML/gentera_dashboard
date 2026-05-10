@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, BarChart3, Users, CheckCircle } from "lucide-react";
@@ -35,16 +35,16 @@ export default function ActivitiesPage() {
   const selectedActivity = activities.find((a) => a.id === selected);
 
   return (
-    <div className="min-h-full bg-surface-900">
-      <TopBar title="Análisis de Actividades" subtitle="Rendimiento por caso de uso" />
+    <div className="min-h-full bg-surface-950">
+      <TopBar title="AnÃ¡lisis de Actividades" subtitle="Rendimiento por caso de uso" />
 
       <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPICard title="Actividades Activas" value={fmtNumber(activityKPIs.length)} icon={BookOpen} accent="blue" index={0} loading={isLoading} />
           <KPICard title="Total Simulaciones" value={fmtNumber(kpis.totalSimulations)} icon={BarChart3} accent="violet" index={1} loading={isLoading} />
-          <KPICard title="Usuarios Únicos" value={fmtNumber(kpis.uniqueUsers)} icon={Users} accent="cyan" index={2} loading={isLoading} />
-          <KPICard title="Tasa Aprobación Global" value={fmtPercent(kpis.passRate)} icon={CheckCircle} accent="emerald" index={3} loading={isLoading} />
+          <KPICard title="Usuarios Ãšnicos" value={fmtNumber(kpis.uniqueUsers)} icon={Users} accent="cyan" index={2} loading={isLoading} />
+          <KPICard title="Tasa AprobaciÃ³n Global" value={fmtPercent(kpis.passRate)} icon={CheckCircle} accent="emerald" index={3} loading={isLoading} />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -57,7 +57,7 @@ export default function ActivitiesPage() {
                 className={cn(
                   "text-xs px-2.5 py-1 rounded-lg border transition-all",
                   selected === null
-                    ? "bg-brand-500/20 border-brand-500 text-brand-400"
+                    ? "bg-brand-500/12 border-brand-500/50 text-brand-400"
                     : "border-border text-text-muted hover:border-surface-300"
                 )}
               >
@@ -92,7 +92,7 @@ export default function ActivitiesPage() {
                       <span className="text-[10px] text-text-muted">{a.simulationCount} sims.</span>
                       <span className={cn(
                         "text-[10px] font-bold",
-                        a.averageScore >= 70 ? "text-emerald-400" : a.averageScore >= 50 ? "text-amber-400" : "text-red-400"
+                        a.averageScore >= 70 ? "text-emerald-400" : a.averageScore >= 50 ? "text-amber-400" : "text-rose-400"
                       )}>
                         {a.averageScore.toFixed(0)}%
                       </span>
@@ -129,7 +129,7 @@ export default function ActivitiesPage() {
 
             {/* Metric toggle */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-text-muted">Métrica:</span>
+              <span className="text-xs text-text-muted">MÃ©trica:</span>
               {(["simulationCount", "averageScore", "passRate"] as const).map((m) => (
                 <button
                   key={m}
@@ -137,11 +137,11 @@ export default function ActivitiesPage() {
                   className={cn(
                     "text-xs px-2.5 py-1 rounded-lg border transition-all",
                     metric === m
-                      ? "bg-brand-500/20 border-brand-500 text-brand-400"
+                      ? "bg-brand-500/12 border-brand-500/50 text-brand-400"
                       : "border-border text-text-muted hover:border-surface-300"
                   )}
                 >
-                  {m === "simulationCount" ? "Volumen" : m === "averageScore" ? "Puntaje" : "Aprobación"}
+                  {m === "simulationCount" ? "Volumen" : m === "averageScore" ? "Puntaje" : "AprobaciÃ³n"}
                 </button>
               ))}
             </div>

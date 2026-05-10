@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Trophy, Medal, Star, Users, BarChart3 } from "lucide-react";
@@ -39,14 +39,14 @@ export default function LeaderboardPage() {
   );
 
   return (
-    <div className="min-h-full bg-surface-900">
+    <div className="min-h-full bg-surface-950">
       <TopBar title="Leaderboard" subtitle="Ranking global de rendimiento" />
 
       <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">
         {/* Summary KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPICard title="Asesores Rankeados" value={fmtNumber(userLeaderboard.length)} icon={Users} accent="blue" index={0} loading={isLoading} />
-          <KPICard title="Mejor Puntaje" value={userLeaderboard[0] ? `${userLeaderboard[0].avgScore.toFixed(0)}%` : "—"} subtitle={userLeaderboard[0]?.userName} icon={Trophy} accent="amber" index={1} loading={isLoading} />
+          <KPICard title="Mejor Puntaje" value={userLeaderboard[0] ? `${userLeaderboard[0].avgScore.toFixed(0)}%` : "â€”"} subtitle={userLeaderboard[0]?.userName} icon={Trophy} accent="amber" index={1} loading={isLoading} />
           <KPICard title="Actividades Rankeadas" value={fmtNumber(activityLeaderboard.length)} icon={BarChart3} accent="violet" index={2} loading={isLoading} />
           <KPICard title="Puntaje Promedio Global" value={`${kpis.averageScore.toFixed(0)}%`} icon={Star} accent="emerald" index={3} loading={isLoading} />
         </div>
@@ -114,7 +114,7 @@ export default function LeaderboardPage() {
             className={cn(
               "text-sm px-4 py-2 rounded-lg border transition-all",
               tab === "users"
-                ? "bg-brand-500/20 border-brand-500 text-brand-400"
+                ? "bg-brand-500/12 border-brand-500/50 text-brand-400"
                 : "border-border text-text-muted hover:border-surface-300"
             )}
           >
@@ -125,7 +125,7 @@ export default function LeaderboardPage() {
             className={cn(
               "text-sm px-4 py-2 rounded-lg border transition-all",
               tab === "activities"
-                ? "bg-brand-500/20 border-brand-500 text-brand-400"
+                ? "bg-brand-500/12 border-brand-500/50 text-brand-400"
                 : "border-border text-text-muted hover:border-surface-300"
             )}
           >
@@ -149,7 +149,7 @@ export default function LeaderboardPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      {["#", "Actividad", "Simulaciones", "Puntaje Prom.", "Aprobación", "Usuarios"].map((h) => (
+                      {["#", "Actividad", "Simulaciones", "Puntaje Prom.", "AprobaciÃ³n", "Usuarios"].map((h) => (
                         <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-text-muted font-semibold whitespace-nowrap">
                           {h}
                         </th>
@@ -182,7 +182,7 @@ export default function LeaderboardPage() {
                         <td className="px-4 py-3">
                           <span className={cn(
                             "text-xs font-mono font-bold",
-                            a.avgScore >= 70 ? "text-emerald-400" : a.avgScore >= 50 ? "text-amber-400" : "text-red-400"
+                            a.avgScore >= 70 ? "text-emerald-400" : a.avgScore >= 50 ? "text-amber-400" : "text-rose-400"
                           )}>
                             {a.avgScore.toFixed(0)}%
                           </span>

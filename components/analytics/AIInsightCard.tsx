@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils/cn";
 
 const SEV: Record<string, { card: string; icon: string; badge: string; dot: string }> = {
   success:  { card: "border-emerald-500/25 bg-emerald-500/5",  icon: "text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",  dot: "bg-emerald-400" },
-  info:     { card: "border-blue-500/25 bg-blue-500/5",        icon: "text-blue-400",    badge: "bg-blue-500/10 text-blue-400 border-blue-500/25",            dot: "bg-blue-400" },
-  warning:  { card: "border-brand-500/30 bg-brand-500/5",     icon: "text-brand-400",   badge: "bg-brand-500/10 text-brand-400 border-brand-500/25",         dot: "bg-brand-400" },
-  critical: { card: "border-coral-500/30 bg-coral-500/5",     icon: "text-coral-400",   badge: "bg-coral-500/10 text-coral-400 border-coral-500/25",         dot: "bg-coral-400" },
+  info:     { card: "border-brand-500/25 bg-brand-500/5",      icon: "text-brand-400",   badge: "bg-brand-500/10 text-brand-400 border-brand-500/25",         dot: "bg-brand-400" },
+  warning:  { card: "border-amber-500/25 bg-amber-500/5",      icon: "text-amber-400",   badge: "bg-amber-500/10 text-amber-400 border-amber-500/25",         dot: "bg-amber-400" },
+  critical: { card: "border-rose-500/25 bg-rose-500/5",        icon: "text-rose-400",    badge: "bg-rose-500/10 text-rose-400 border-rose-500/25",            dot: "bg-rose-400" },
 };
 const TYPE_ICONS = {
   achievement: CheckCircle,
@@ -66,14 +66,14 @@ export function InsightsPanel({ insights, loading }: { insights: AIInsight[]; lo
       className="glass rounded-2xl p-5 flex flex-col"
     >
       <div className="flex items-center gap-2.5 mb-4">
-        <div className="w-8 h-8 rounded-xl bg-violet-500/10 flex items-center justify-center">
-          <Sparkles className="w-4 h-4 text-violet-400" />
+        <div className="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center">
+          <Sparkles className="w-4 h-4 text-brand-400" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-text-primary">Inteligencia Predictiva</h3>
+          <h3 className="text-sm font-semibold text-text-primary">Insights IA</h3>
           <p className="text-[10px] text-text-muted">Análisis automático del período</p>
         </div>
-        <span className="ml-auto text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
+        <span className="ml-auto text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">
           IA
         </span>
       </div>

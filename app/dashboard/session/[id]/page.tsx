@@ -43,7 +43,7 @@ export default function SessionDrillDownPage({ params }: Props) {
 
   if (isLoading) {
     return (
-      <div className="min-h-full bg-surface-900">
+      <div className="min-h-full bg-surface-950">
         <TopBar title="Cargando sesión…" />
         <div className="p-6 space-y-4 max-w-4xl mx-auto">
           <div className="skeleton-shimmer h-32 rounded-2xl" />
@@ -56,7 +56,7 @@ export default function SessionDrillDownPage({ params }: Props) {
 
   if (!simulation) {
     return (
-      <div className="min-h-full bg-surface-900">
+      <div className="min-h-full bg-surface-950">
         <TopBar title="Sesión no encontrada" />
         <div className="p-6 max-w-4xl mx-auto">
           <div className="glass-card rounded-2xl p-12 text-center">
@@ -78,7 +78,7 @@ export default function SessionDrillDownPage({ params }: Props) {
   const sessionApplicableRounds = simulation.rounds.filter((r) => r.applicable).length;
 
   return (
-    <div className="min-h-full bg-surface-900">
+    <div className="min-h-full bg-surface-950">
       <TopBar
         title={`Sesión #${simulation.id}`}
         subtitle={simulation.activityName}
@@ -157,20 +157,20 @@ export default function SessionDrillDownPage({ params }: Props) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-card rounded-2xl p-5 border border-amber-500/20 bg-amber-500/5"
+            className="glass-card rounded-2xl p-5 border border-brand-500/20 bg-brand-500/4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Brain className="w-4 h-4 text-amber-400" />
+              <Brain className="w-4 h-4 text-brand-400" />
               <h3 className="text-sm font-semibold text-text-primary">Recomendaciones de Coaching</h3>
               <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
                 IA
               </span>
             </div>
             <div className="space-y-2">
-              {simulation.rounds.filter((r) => r.applicable && r.score === 0).map((r) => (
+              {simulation.rounds.filter((r) => r.applicable && r.score === 0 && r.index <= 5).map((r) => (
                 <div key={r.index} className="flex gap-2.5 text-xs">
-                  <div className="w-5 h-5 rounded-full bg-red-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-[9px] font-bold text-red-400">{r.index}</span>
+                  <div className="w-5 h-5 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-[9px] font-bold text-rose-400">{r.index}</span>
                   </div>
                   <div>
                     <p className="text-text-primary font-medium">Interacción {r.index} requiere refuerzo</p>
@@ -182,7 +182,7 @@ export default function SessionDrillDownPage({ params }: Props) {
                   </div>
                 </div>
               ))}
-              {simulation.rounds.filter((r) => r.applicable && r.score === 0).length === 0 && (
+              {simulation.rounds.filter((r) => r.applicable && r.score === 0 && r.index <= 5).length === 0 && (
                 <p className="text-xs text-text-secondary">No se identificaron interacciones críticas en esta sesión.</p>
               )}
             </div>
@@ -230,13 +230,13 @@ export default function SessionDrillDownPage({ params }: Props) {
                     </div>
                     <div className={cn(
                       "text-xs font-mono font-bold tabular-nums",
-                      s.score >= 80 ? "text-emerald-400" : s.score >= 60 ? "text-brand-400" : "text-red-400"
+                      s.score >= 80 ? "text-emerald-400" : s.score >= 60 ? "text-brand-400" : "text-rose-400"
                     )}>
                       {s.score}%
                     </div>
                     <div className={cn(
                       "text-[10px] px-1.5 py-0.5 rounded-full",
-                      s.passed ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
+                      s.passed ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
                     )}>
                       {s.passed ? "✓" : "✗"}
                     </div>

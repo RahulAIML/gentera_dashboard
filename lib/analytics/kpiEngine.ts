@@ -133,7 +133,7 @@ export function computeInteractionKPIs(sims: NormalizedSimulation[]): Interactio
       totalApplicable: applicable.length,
       totalPassed: passed.length,
     };
-  });
+  }).filter((r) => r.totalApplicable > 0); // Exclude Round 6 (always "No aplica") and any round with no applicable data
 }
 
 // ---- Trend Data --------------------------------------------------------------

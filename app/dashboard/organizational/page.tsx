@@ -16,7 +16,7 @@ import {
   ResponsiveContainer, Cell,
 } from "recharts";
 
-const COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#ec4899"];
+const COLORS = ["#6366f1", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#fb7185", "#a78bfa"];
 
 export default function OrganizationalPage() {
   const { simulations, isLoading } = useFilteredSimulations();
@@ -72,7 +72,7 @@ export default function OrganizationalPage() {
   }
 
   return (
-    <div className="min-h-full bg-surface-900">
+    <div className="min-h-full bg-surface-950">
       <TopBar title="Inteligencia Organizacional" subtitle="Estructura, equipos y participación" />
 
       <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">

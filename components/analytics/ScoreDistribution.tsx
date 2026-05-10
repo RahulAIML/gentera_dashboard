@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import type { ScoreDistributionBucket } from "@/types/analytics";
 
-const COLORS = ["#f43f5e", "#f97316", "#f59e0b", "#0ea5e9", "#10b981"];
+const COLORS = ["#fb7185", "#fbbf24", "#818cf8", "#60a5fa", "#34d399"];
 
 function Tip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
@@ -48,9 +48,9 @@ export function ScoreDistribution({ data, loading }: { data: ScoreDistributionBu
 
       <ResponsiveContainer width="100%" height={160}>
         <BarChart data={data} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,32,56,0.8)" vertical={false} />
-          <XAxis dataKey="range" tick={{ fill: "#4a6480", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: "#4a6480", fontSize: 10 }} axisLine={false} tickLine={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+          <XAxis dataKey="range" tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
           <Tooltip content={<Tip />} />
           <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={52}>
             {data.map((_, i) => <Cell key={i} fill={COLORS[i]} fillOpacity={0.85} />)}

@@ -77,40 +77,40 @@ export function ScoreTrendChart({ data, loading }: Props) {
         <AreaChart data={chartData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
           <defs>
             <linearGradient id="gScore" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#f59e0b" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity={0.0}  />
+              <stop offset="0%"   stopColor="#818cf8" stopOpacity={0.2} />
+              <stop offset="100%" stopColor="#818cf8" stopOpacity={0.0}  />
             </linearGradient>
             <linearGradient id="gPass" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"   stopColor="#10b981" stopOpacity={0.22} />
               <stop offset="100%" stopColor="#10b981" stopOpacity={0.0}  />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,32,56,0.8)" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fill: "#4a6480", fontSize: 10 }}
+            tick={{ fill: "#6b6f8e", fontSize: 10 }}
             axisLine={false}
             tickLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[0, 100]}
-            tick={{ fill: "#4a6480", fontSize: 10 }}
+            tick={{ fill: "#6b6f8e", fontSize: 10 }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v) => `${v}%`}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            wrapperStyle={{ fontSize: 10, color: "#8ba4c4", paddingTop: 10 }}
+            wrapperStyle={{ fontSize: 10, color: "#a8aac8", paddingTop: 10 }}
             formatter={(v) =>
               v === "averageScore" ? "Puntaje promedio" :
               v === "passRate100"  ? "Tasa aprobación" : v
             }
           />
-          <ReferenceLine y={60} stroke="#f59e0b" strokeDasharray="4 4" strokeOpacity={0.3} />
-          <Area type="monotone" dataKey="averageScore" stroke="#f59e0b" strokeWidth={2} fill="url(#gScore)" dot={false} activeDot={{ r: 4, fill: "#f59e0b", stroke: "#020817", strokeWidth: 2 }} />
-          <Area type="monotone" dataKey="passRate100"  stroke="#10b981" strokeWidth={2} fill="url(#gPass)"  dot={false} activeDot={{ r: 4, fill: "#10b981", stroke: "#020817", strokeWidth: 2 }} />
+          <ReferenceLine y={60} stroke="#6366f1" strokeDasharray="4 4" strokeOpacity={0.25} />
+          <Area type="monotone" dataKey="averageScore" stroke="#818cf8" strokeWidth={2} fill="url(#gScore)" dot={false} activeDot={{ r: 4, fill: "#818cf8", stroke: "#0d0f1a", strokeWidth: 2 }} />
+          <Area type="monotone" dataKey="passRate100"  stroke="#10b981" strokeWidth={2} fill="url(#gPass)"  dot={false} activeDot={{ r: 4, fill: "#10b981", stroke: "#0d0f1a", strokeWidth: 2 }} />
         </AreaChart>
       </ResponsiveContainer>
     </motion.div>

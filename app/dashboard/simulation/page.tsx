@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Activity, Search, ExternalLink, Calendar, User, CheckCircle, XCircle } from "lucide-react";
@@ -50,16 +50,16 @@ export default function SimulationPage() {
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className="min-h-full bg-surface-900">
+    <div className="min-h-full bg-surface-950">
       <TopBar title="Simulaciones" subtitle="Registro completo de sesiones de roleplay" />
 
       <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">
         {/* KPI row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPICard title="Total Simulaciones" value={fmtNumber(kpis.totalSimulations)} icon={Activity} accent="blue" index={0} loading={isLoading} />
-          <KPICard title="Usuarios Únicos" value={fmtNumber(kpis.uniqueUsers)} icon={User} accent="violet" index={1} loading={isLoading} />
+          <KPICard title="Usuarios Ãšnicos" value={fmtNumber(kpis.uniqueUsers)} icon={User} accent="violet" index={1} loading={isLoading} />
           <KPICard title="Puntaje Promedio" value={`${kpis.averageScore.toFixed(0)}%`} icon={Activity} accent="cyan" index={2} loading={isLoading} />
-          <KPICard title="Tasa Aprobación" value={fmtPercent(kpis.passRate)} icon={CheckCircle} accent="emerald" index={3} loading={isLoading} />
+          <KPICard title="Tasa AprobaciÃ³n" value={fmtPercent(kpis.passRate)} icon={CheckCircle} accent="emerald" index={3} loading={isLoading} />
         </div>
 
         {/* Charts row */}
@@ -89,7 +89,7 @@ export default function SimulationPage() {
                     className={cn(
                       "text-xs px-2.5 py-1 rounded-lg border transition-all",
                       sort === s
-                        ? "bg-brand-500/20 border-brand-500 text-brand-400"
+                        ? "bg-brand-500/12 border-brand-500/50 text-brand-400"
                         : "border-border text-text-muted hover:border-surface-300"
                     )}
                   >
@@ -98,12 +98,12 @@ export default function SimulationPage() {
                 ))}
               </div>
               {/* Search */}
-              <div className="flex items-center gap-2 bg-surface-700 border border-border rounded-lg px-3 py-1.5">
+              <div className="flex items-center gap-2 bg-surface-800 border border-border rounded-lg px-3 py-1.5">
                 <Search className="w-3.5 h-3.5 text-text-muted" />
                 <input
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                  placeholder="Buscar usuario, actividad…"
+                  placeholder="Buscar usuario, actividadâ€¦"
                   className="bg-transparent text-xs text-text-primary placeholder:text-text-muted outline-none w-48"
                 />
               </div>
@@ -114,7 +114,7 @@ export default function SimulationPage() {
             <table className="w-full analytics-table">
               <thead>
                 <tr className="border-b border-border">
-                  {["ID", "Usuario", "Actividad", "Fecha", "Puntaje", "Diagnóstico", ""].map((h) => (
+                  {["ID", "Usuario", "Actividad", "Fecha", "Puntaje", "DiagnÃ³stico", ""].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-text-muted font-semibold whitespace-nowrap">
                       {h}
                     </th>
@@ -182,9 +182,9 @@ export default function SimulationPage() {
                             "text-[10px] font-semibold px-2 py-0.5 rounded-full",
                             s.passed
                               ? "bg-emerald-500/10 text-emerald-400"
-                              : "bg-red-500/10 text-red-400"
+                              : "bg-rose-500/10 text-rose-400"
                           )}>
-                            {s.passed ? "✓ Aprobado" : "✗ No aprobado"}
+                            {s.passed ? "âœ“ Aprobado" : "âœ— No aprobado"}
                           </span>
                         </td>
                         <td className="px-4 py-3">
@@ -207,7 +207,7 @@ export default function SimulationPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-5 py-3 border-t border-border">
               <span className="text-xs text-text-muted">
-                Página {page} de {totalPages}
+                PÃ¡gina {page} de {totalPages}
               </span>
               <div className="flex items-center gap-1.5">
                 <button

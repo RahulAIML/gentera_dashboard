@@ -7,9 +7,9 @@ interface Props { data: InteractionKPI[]; loading?: boolean; }
 
 function getColor(r: number): { bar: string; text: string; bg: string } {
   if (r >= 0.8) return { bar: "#10b981", text: "text-emerald-400", bg: "bg-emerald-500/10" };
-  if (r >= 0.6) return { bar: "#f59e0b", text: "text-brand-400",   bg: "bg-brand-500/10"  };
-  if (r >= 0.4) return { bar: "#0ea5e9", text: "text-blue-400",    bg: "bg-blue-500/10"   };
-  return          { bar: "#f43f5e", text: "text-coral-400",  bg: "bg-coral-500/10"  };
+  if (r >= 0.6) return { bar: "#818cf8", text: "text-brand-400",   bg: "bg-brand-500/10"  };
+  if (r >= 0.4) return { bar: "#fbbf24", text: "text-amber-400",   bg: "bg-amber-500/10"  };
+  return          { bar: "#fb7185", text: "text-rose-400",    bg: "bg-rose-500/10"   };
 }
 
 export function InteractionFunnel({ data, loading }: Props) {
@@ -37,8 +37,8 @@ export function InteractionFunnel({ data, loading }: Props) {
           <h3 className="text-sm font-bold text-text-primary">Rendimiento por Interacción</h3>
           <p className="text-[11px] text-text-muted mt-0.5">Tasa de aprobación en cada ronda conversacional</p>
         </div>
-        <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
-          <MessageSquare className="w-4 h-4 text-blue-400" />
+        <div className="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center">
+          <MessageSquare className="w-4 h-4 text-brand-400" />
         </div>
       </div>
 
@@ -60,7 +60,7 @@ export function InteractionFunnel({ data, loading }: Props) {
                 </div>
 
                 {/* Bar track */}
-                <div className="flex-1 bg-surface-700 rounded-full h-7 overflow-hidden relative">
+                <div className="flex-1 bg-surface-800 rounded-full h-7 overflow-hidden relative">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${d.passRate * 100}%` }}
@@ -96,9 +96,9 @@ export function InteractionFunnel({ data, loading }: Props) {
       <div className="flex flex-wrap items-center gap-3 mt-4 pt-4 border-t border-border">
         {[
           { c: "#10b981", l: "≥80% excelente" },
-          { c: "#f59e0b", l: "60–79% bueno" },
-          { c: "#0ea5e9", l: "40–59% regular" },
-          { c: "#f43f5e", l: "<40% crítico" },
+          { c: "#818cf8", l: "60–79% bueno" },
+          { c: "#fbbf24", l: "40–59% regular" },
+          { c: "#fb7185", l: "<40% crítico" },
         ].map((item) => (
           <div key={item.l} className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full" style={{ background: item.c }} />
