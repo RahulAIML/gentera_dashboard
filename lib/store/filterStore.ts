@@ -14,7 +14,8 @@ interface FilterStore extends FilterState {
 }
 
 const DEFAULT: FilterState = {
-  dateRange: { start: subMonths(new Date(), 6), end: endOfDay(new Date()) },
+  // Show all data by default — go back 18 months to capture the full dataset
+  dateRange: { start: subMonths(new Date(), 18), end: endOfDay(new Date()) },
   activityIds: [],
   userName: "",
   minScore: null,
