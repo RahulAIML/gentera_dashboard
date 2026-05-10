@@ -57,9 +57,9 @@ export default function SimulationPage() {
         {/* KPI row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPICard title="Total Simulaciones" value={fmtNumber(kpis.totalSimulations)} icon={Activity} accent="blue" index={0} loading={isLoading} />
-          <KPICard title="Usuarios Ãšnicos" value={fmtNumber(kpis.uniqueUsers)} icon={User} accent="violet" index={1} loading={isLoading} />
+          <KPICard title="Usuarios Únicos" value={fmtNumber(kpis.uniqueUsers)} icon={User} accent="violet" index={1} loading={isLoading} />
           <KPICard title="Puntaje Promedio" value={`${kpis.averageScore.toFixed(0)}%`} icon={Activity} accent="cyan" index={2} loading={isLoading} />
-          <KPICard title="Tasa AprobaciÃ³n" value={fmtPercent(kpis.passRate)} icon={CheckCircle} accent="emerald" index={3} loading={isLoading} />
+          <KPICard title="Tasa Aprobación" value={fmtPercent(kpis.passRate)} icon={CheckCircle} accent="emerald" index={3} loading={isLoading} />
         </div>
 
         {/* Charts row */}
@@ -114,7 +114,7 @@ export default function SimulationPage() {
             <table className="w-full analytics-table">
               <thead>
                 <tr className="border-b border-border">
-                  {["ID", "Usuario", "Actividad", "Fecha", "Puntaje", "DiagnÃ³stico", ""].map((h) => (
+                  {["ID", "Usuario", "Actividad", "Fecha", "Puntaje", "Diagnóstico", ""].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-text-muted font-semibold whitespace-nowrap">
                       {h}
                     </th>
@@ -207,7 +207,7 @@ export default function SimulationPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-5 py-3 border-t border-border">
               <span className="text-xs text-text-muted">
-                PÃ¡gina {page} de {totalPages}
+                Página {page} de {totalPages}
               </span>
               <div className="flex items-center gap-1.5">
                 <button

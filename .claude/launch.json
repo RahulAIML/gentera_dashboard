@@ -5,6 +5,7 @@
       "name": "gentera-dashboard",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
+      "cwd": "D:\\Gentera_Dashboard\\gentera-dashboard",
       "port": 3000,
       "autoPort": false
     }

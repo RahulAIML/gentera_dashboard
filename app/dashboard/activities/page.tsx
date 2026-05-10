@@ -36,15 +36,15 @@ export default function ActivitiesPage() {
 
   return (
     <div className="min-h-full bg-surface-950">
-      <TopBar title="AnÃ¡lisis de Actividades" subtitle="Rendimiento por caso de uso" />
+      <TopBar title="Análisis de Actividades" subtitle="Rendimiento por caso de uso" />
 
       <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KPICard title="Actividades Activas" value={fmtNumber(activityKPIs.length)} icon={BookOpen} accent="blue" index={0} loading={isLoading} />
           <KPICard title="Total Simulaciones" value={fmtNumber(kpis.totalSimulations)} icon={BarChart3} accent="violet" index={1} loading={isLoading} />
-          <KPICard title="Usuarios Ãšnicos" value={fmtNumber(kpis.uniqueUsers)} icon={Users} accent="cyan" index={2} loading={isLoading} />
-          <KPICard title="Tasa AprobaciÃ³n Global" value={fmtPercent(kpis.passRate)} icon={CheckCircle} accent="emerald" index={3} loading={isLoading} />
+          <KPICard title="Usuarios Únicos" value={fmtNumber(kpis.uniqueUsers)} icon={Users} accent="cyan" index={2} loading={isLoading} />
+          <KPICard title="Tasa Aprobación Global" value={fmtPercent(kpis.passRate)} icon={CheckCircle} accent="emerald" index={3} loading={isLoading} />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -129,7 +129,7 @@ export default function ActivitiesPage() {
 
             {/* Metric toggle */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-text-muted">MÃ©trica:</span>
+              <span className="text-xs text-text-muted">Métrica:</span>
               {(["simulationCount", "averageScore", "passRate"] as const).map((m) => (
                 <button
                   key={m}
@@ -141,7 +141,7 @@ export default function ActivitiesPage() {
                       : "border-border text-text-muted hover:border-surface-300"
                   )}
                 >
-                  {m === "simulationCount" ? "Volumen" : m === "averageScore" ? "Puntaje" : "AprobaciÃ³n"}
+                  {m === "simulationCount" ? "Volumen" : m === "averageScore" ? "Puntaje" : "Aprobación"}
                 </button>
               ))}
             </div>

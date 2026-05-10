@@ -149,7 +149,7 @@ export default function LeaderboardPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      {["#", "Actividad", "Simulaciones", "Puntaje Prom.", "AprobaciÃ³n", "Usuarios"].map((h) => (
+                      {["#", "Actividad", "Simulaciones", "Puntaje Prom.", "Aprobación", "Usuarios"].map((h) => (
                         <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-text-muted font-semibold whitespace-nowrap">
                           {h}
                         </th>
