@@ -6,6 +6,7 @@ import Link from "next/link";
 import { TopBar } from "@/components/layout/TopBar";
 import { ConversationViewer } from "@/components/analytics/ConversationViewer";
 import { useSimulations } from "@/hooks/useAnalyticsData";
+import { useI18n } from "@/lib/i18n";
 import { fmtDateTime } from "@/lib/utils/formatters";
 import { cn } from "@/lib/utils/cn";
 import { generateInsights } from "@/lib/analytics/insightEngine";
@@ -19,6 +20,7 @@ interface Props {
 export default function SessionDrillDownPage({ params }: Props) {
   const { id } = use(params);
   const { simulations, isLoading } = useSimulations();
+  const { t } = useI18n();
 
   const simulation = useMemo(
     () => simulations.find((s) => s.id === Number(id)),
@@ -44,7 +46,7 @@ export default function SessionDrillDownPage({ params }: Props) {
   if (isLoading) {
     return (
       <div className="min-h-full bg-surface-950">
-        <TopBar title="Cargando sesión…" />
+        <TopBar title={t.common.loadingSession} />
         <div className="p-6 space-y-4 max-w-4xl mx-auto">
           <div className="skeleton-shimmer h-32 rounded-2xl" />
           <div className="skeleton-shimmer h-64 rounded-2xl" />
@@ -57,12 +59,12 @@ export default function SessionDrillDownPage({ params }: Props) {
   if (!simulation) {
     return (
       <div className="min-h-full bg-surface-950">
-        <TopBar title="Sesión no encontrada" />
+        <TopBar title={t.common.sessionNotFound} />
         <div className="p-6 max-w-4xl mx-auto">
           <div className="glass-card rounded-2xl p-12 text-center">
-            <p className="text-text-secondary mb-4">No se encontró la sesión #{id}</p>
+            <p className="text-text-secondary mb-4">{t.common.sessionNotFound} #{id}</p>
             <Link href="/dashboard/simulation" className="text-sm text-brand-400 hover:text-brand-300">
-              ← Volver a simulaciones
+              ← {t.common.back}
             </Link>
           </div>
         </div>
@@ -91,7 +93,7 @@ export default function SessionDrillDownPage({ params }: Props) {
           className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-brand-400 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Volver a simulaciones
+          {t.common.back}
         </Link>
 
         {/* Session header */}
@@ -106,9 +108,9 @@ export default function SessionDrillDownPage({ params }: Props) {
                 <User className="w-4 h-4 text-brand-400" />
               </div>
               <div>
-                <p className="text-[10px] text-text-muted uppercase tracking-wider">Asesor</p>
+                <p className="text-[10px] text-text-muted uppercase tracking-wider">{t.table.advisor}</p>
                 <p className="text-sm font-semibold text-text-primary mt-0.5">{simulation.userName}</p>
-                <p className="text-[11px] text-text-muted">Rank #{userRank} global</p>
+                <p className="text-[11px] text-text-muted">{t.ai.rank} #{userRank}</p>
               </div>
             </div>
 
@@ -117,7 +119,7 @@ export default function SessionDrillDownPage({ params }: Props) {
                 <BookOpen className="w-4 h-4 text-violet-400" />
               </div>
               <div>
-                <p className="text-[10px] text-text-muted uppercase tracking-wider">Actividad</p>
+                <p className="text-[10px] text-text-muted uppercase tracking-wider">{t.table.activity}</p>
                 <p className="text-sm font-semibold text-text-primary mt-0.5 leading-snug max-w-[180px]">
                   {simulation.activityName}
                 </p>
@@ -129,7 +131,7 @@ export default function SessionDrillDownPage({ params }: Props) {
                 <Calendar className="w-4 h-4 text-cyan-400" />
               </div>
               <div>
-                <p className="text-[10px] text-text-muted uppercase tracking-wider">Fecha y Hora</p>
+                <p className="text-[10px] text-text-muted uppercase tracking-wider">{t.table.date}</p>
                 <p className="text-sm font-semibold text-text-primary mt-0.5">{fmtDateTime(simulation.timestamp)}</p>
               </div>
             </div>
@@ -139,12 +141,12 @@ export default function SessionDrillDownPage({ params }: Props) {
                 <Target className="w-4 h-4 text-emerald-400" />
               </div>
               <div>
-                <p className="text-[10px] text-text-muted uppercase tracking-wider">Rendimiento</p>
+                <p className="text-[10px] text-text-muted uppercase tracking-wider">{t.table.performance}</p>
                 <p className="text-sm font-semibold text-text-primary mt-0.5">
-                  {sessionPassedRounds}/{sessionApplicableRounds} interacciones
+                  {sessionPassedRounds}/{sessionApplicableRounds} {t.table.interactions}
                 </p>
                 <p className="text-[11px] text-text-muted">
-                  Promedio del asesor: {avgUserScore.toFixed(0)}%
+                  {t.ai.userAverage}: {avgUserScore.toFixed(0)}%
                 </p>
               </div>
             </div>
@@ -161,9 +163,9 @@ export default function SessionDrillDownPage({ params }: Props) {
           >
             <div className="flex items-center gap-2 mb-3">
               <Brain className="w-4 h-4 text-brand-400" />
-              <h3 className="text-sm font-semibold text-text-primary">Recomendaciones de Coaching</h3>
+              <h3 className="text-sm font-semibold text-text-primary">{t.ai.coachingRec}</h3>
               <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
-                IA
+                {t.ai.copilot}
               </span>
             </div>
             <div className="space-y-2">
@@ -173,17 +175,17 @@ export default function SessionDrillDownPage({ params }: Props) {
                     <span className="text-[9px] font-bold text-rose-400">{r.index}</span>
                   </div>
                   <div>
-                    <p className="text-text-primary font-medium">Interacción {r.index} requiere refuerzo</p>
+                    <p className="text-text-primary font-medium">Interaction {r.index} {t.ai.interactionNeedsReinforcement}</p>
                     <p className="text-text-muted leading-relaxed mt-0.5">
                       {r.feedback
                         ? r.feedback
-                        : "Revisar la respuesta del asesor en esta interacción para identificar áreas de mejora en el manejo del escenario."}
+                        : "Review the advisor's response in this interaction to identify areas for improvement in scenario handling."}
                     </p>
                   </div>
                 </div>
               ))}
               {simulation.rounds.filter((r) => r.applicable && r.score === 0 && r.index <= 5).length === 0 && (
-                <p className="text-xs text-text-secondary">No se identificaron interacciones críticas en esta sesión.</p>
+                <p className="text-xs text-text-secondary">{t.ai.noInteractionIssues}</p>
               )}
             </div>
           </motion.div>
@@ -207,8 +209,8 @@ export default function SessionDrillDownPage({ params }: Props) {
             className="glass-card rounded-2xl p-5"
           >
             <h3 className="text-sm font-semibold text-text-primary mb-4">
-              Historial de {simulation.userName}
-              <span className="ml-2 text-xs text-text-muted font-normal">({userSessions.length} sesiones)</span>
+              {t.ai.sessionHistory} {simulation.userName}
+              <span className="ml-2 text-xs text-text-muted font-normal">({userSessions.length} {t.common.results})</span>
             </h3>
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
               {userSessions

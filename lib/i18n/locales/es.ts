@@ -145,6 +145,8 @@ export interface Dict {
     refresh:  string;
     active:   string;
     inactive: string;
+    loadingSession: string;
+    sessionNotFound: string;
   };
   scope: {
     title:           string;
@@ -248,6 +250,11 @@ export const es: Dict = {
     approved:   "Aprobado",
     failed:     "No aprobado",
     viewDetails:"Ver detalles",
+    advisor:    "Asesor",
+    performance:"Rendimiento",
+    interactions: "Interacciones",
+    back:       "Atrás",
+    history:    "Historial",
   },
   ai: {
     copilot:     "Copiloto IA",
@@ -282,6 +289,12 @@ export const es: Dict = {
     optimal:           "Rendimiento óptimo.",
     advisors:          "asesores",
     vsPrevious:        "vs anterior",
+    coachingRec:       "Recomendaciones de Coaching",
+    interactionNeedsReinforcement: "requiere refuerzo",
+    noInteractionIssues: "No se identificaron interacciones críticas en esta sesión.",
+    userAverage:       "Promedio del asesor",
+    sessionHistory:    "Historial de",
+    rank:              "Rango global",
   },
   auth: {
     login:          "Iniciar sesión",
@@ -332,5 +345,7 @@ export const es: Dict = {
     refresh:    "Actualizar datos",
     active:     "Activo",
     inactive:   "Inactivo",
+    loadingSession: "Cargando sesión…",
+    sessionNotFound: "Sesión no encontrada",
   },
 };

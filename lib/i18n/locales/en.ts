@@ -81,6 +81,11 @@ export const en: Dict = {
     approved:   "Passed",
     failed:     "Failed",
     viewDetails:"View details",
+    advisor:    "Advisor",
+    performance:"Performance",
+    interactions: "Interactions",
+    back:       "Back",
+    history:    "History",
   },
   ai: {
     copilot:     "AI Copilot",
@@ -115,6 +120,12 @@ export const en: Dict = {
     optimal:           "Optimal performance.",
     advisors:          "advisors",
     vsPrevious:        "vs previous",
+    coachingRec:       "Coaching Recommendations",
+    interactionNeedsReinforcement: "needs reinforcement",
+    noInteractionIssues: "No critical interactions identified in this session.",
+    userAverage:       "Advisor average",
+    sessionHistory:    "History of",
+    rank:              "Global rank",
   },
   auth: {
     login:          "Sign in",
@@ -165,5 +176,7 @@ export const en: Dict = {
     refresh:  "Refresh data",
     active:   "Active",
     inactive: "Inactive",
+    loadingSession: "Loading session…",
+    sessionNotFound: "Session not found",
   },
 } as const;
