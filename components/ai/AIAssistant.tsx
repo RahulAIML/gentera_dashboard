@@ -12,9 +12,10 @@ export function AIAssistant() {
   const [loading, setLoading] = useState(false);
 
   const quickPrompts = [
-    "Summarize this dashboard",
-    "Which teams underperform?",
-    "What interactions fail most?",
+    "What are the key performance metrics?",
+    "Which advisors need coaching?",
+    "What interactions have the lowest pass rates?",
+    "How has performance trended this month?",
   ];
 
   const handleSend = async () => {
