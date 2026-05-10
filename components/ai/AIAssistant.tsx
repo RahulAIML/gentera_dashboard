@@ -19,16 +19,65 @@ export function AIAssistant() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    setMessages([...messages, { role: "user", text: input }]);
+
+    const userMessage = input;
+    setMessages((m) => [...m, { role: "user", text: userMessage }]);
     setInput("");
     setLoading(true);
 
-    // TODO: Call Gemini API with context
-    setTimeout(() => {
-      setMessages((m) => [...m, { role: "ai", text: "AI insights coming soon. Add GEMINI_API_KEY to environment." }]);
+    try {
+      // Get page context from pathname
+      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+      const pageContext = getPageContext(pathname);
+
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userMessage,
+          context: pageContext,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        setMessages((m) => [
+          ...m,
+          {
+            role: "ai",
+            text: `Error: ${error.error || "Failed to get response"}`,
+          },
+        ]);
+        return;
+      }
+
+      const data = await response.json();
+      setMessages((m) => [...m, { role: "ai", text: data.response }]);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Connection error";
+      setMessages((m) => [
+        ...m,
+        { role: "ai", text: `Error: ${errMsg}` },
+      ]);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
+
+  /**
+   * Extract context from current page pathname
+   */
+  function getPageContext(pathname: string) {
+    const context: any = {
+      page: pathname.replace("/dashboard", "").replace(/\/$/, "") || "overview",
+    };
+
+    // Could enhance with filter state if using Zustand/Redux
+    // For now, just page name and general organization scope
+    context.organization = "Gentera Organization";
+
+    return context;
+  }
 
   return (
     <>
