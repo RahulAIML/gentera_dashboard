@@ -221,11 +221,10 @@ export function computeLeaderboard(sims: NormalizedSimulation[]): LeaderboardEnt
 // ---- Heatmap ----------------------------------------------------------------
 
 export function computeHeatmap(sims: NormalizedSimulation[]): HeatmapCell[] {
-  const DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
   const map = new Map<string, { count: number; scoreSum: number }>();
 
   for (const s of sims) {
-    const day = DAYS[s.timestamp.getDay()];
+    const day = s.timestamp.getDay();
     const hour = s.timestamp.getHours();
     const key = `${day}-${hour}`;
     const existing = map.get(key) ?? { count: 0, scoreSum: 0 };
@@ -233,7 +232,7 @@ export function computeHeatmap(sims: NormalizedSimulation[]): HeatmapCell[] {
   }
 
   const cells: HeatmapCell[] = [];
-  for (const day of DAYS) {
+  for (let day = 0; day < 7; day++) {
     for (let hour = 6; hour <= 22; hour++) {
       const key = `${day}-${hour}`;
       const val = map.get(key) ?? { count: 0, scoreSum: 0 };

@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { MessageSquare } from "lucide-react";
 import type { InteractionKPI } from "@/types/analytics";
+import { useI18n } from "@/lib/i18n";
 
 interface Props { data: InteractionKPI[]; loading?: boolean; }
 
@@ -13,6 +14,7 @@ function getColor(r: number): { bar: string; text: string; bg: string } {
 }
 
 export function InteractionFunnel({ data, loading }: Props) {
+  const { t } = useI18n();
   const applicable = data.filter((d) => d.totalApplicable > 0);
 
   if (loading) {
@@ -34,8 +36,8 @@ export function InteractionFunnel({ data, loading }: Props) {
     >
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h3 className="text-sm font-bold text-text-primary">Rendimiento por Interacción</h3>
-          <p className="text-[11px] text-text-muted mt-0.5">Tasa de aprobación en cada ronda conversacional</p>
+          <h3 className="text-sm font-bold text-text-primary">{t.charts.interactionFunnel}</h3>
+          <p className="text-[11px] text-text-muted mt-0.5">{t.charts.interactionSub}</p>
         </div>
         <div className="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center">
           <MessageSquare className="w-4 h-4 text-brand-400" />
@@ -73,7 +75,7 @@ export function InteractionFunnel({ data, loading }: Props) {
                     </span>
                   </motion.div>
                   <div className="absolute inset-0 flex items-center px-3 pointer-events-none">
-                    <span className="text-[11px] text-text-muted">Interacción {d.roundIndex}</span>
+                    <span className="text-[11px] text-text-muted">{t.charts.interactionLabel} {d.roundIndex}</span>
                   </div>
                 </div>
 
@@ -95,10 +97,10 @@ export function InteractionFunnel({ data, loading }: Props) {
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-3 mt-4 pt-4 border-t border-border">
         {[
-          { c: "#10b981", l: "≥80% excelente" },
-          { c: "#818cf8", l: "60–79% bueno" },
-          { c: "#fbbf24", l: "40–59% regular" },
-          { c: "#fb7185", l: "<40% crítico" },
+          { c: "#10b981", l: `≥80% ${t.charts.excellent}` },
+          { c: "#818cf8", l: `60–79% ${t.charts.good}` },
+          { c: "#fbbf24", l: `40–59% ${t.charts.average}` },
+          { c: "#fb7185", l: `<40% ${t.charts.critical}` },
         ].map((item) => (
           <div key={item.l} className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full" style={{ background: item.c }} />

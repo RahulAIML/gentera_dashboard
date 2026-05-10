@@ -114,7 +114,7 @@ export default function OrganizationalPage() {
                     <td className="px-4 py-2.5"><span className="text-xs text-text-secondary">{m.email}</span></td>
                     <td className="px-4 py-2.5">
                       <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full font-semibold", m.status === "active" ? "bg-emerald-500/10 text-emerald-400" : "bg-surface-600 text-text-muted")}>
-                        {m.status === "active" ? "Activo" : "Inactivo"}
+                        {m.status === "active" ? t.common.active : t.common.inactive}
                       </span>
                     </td>
                     <td className="px-4 py-2.5"><span className="text-xs text-text-muted whitespace-nowrap">{fmtDate(m.createdAt)}</span></td>

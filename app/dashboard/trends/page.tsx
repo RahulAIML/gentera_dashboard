@@ -19,13 +19,16 @@ import {
   Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 
-const DAYS  = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const DAYS_ES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const DAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_INDICES = [0, 1, 2, 3, 4, 5, 6];
 const HOURS = Array.from({ length: 17 }, (_, i) => i + 6);
 
 export default function TrendsPage() {
   const { simulations, isLoading } = useFilteredSimulations();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [granularity, setGranularity] = useState<"monthly" | "weekly">("monthly");
+  const DAYS = locale === "es" ? DAYS_ES : DAYS_EN;
 
   const kpis         = useMemo(() => computeKPISummary(simulations, []), [simulations]);
   const monthlyTrend = useMemo(() => computeMonthlyTrend(simulations),   [simulations]);
@@ -85,7 +88,7 @@ export default function TrendsPage() {
                   : "border-border text-text-muted hover:border-border-strong"
               )}
             >
-              {g === "monthly" ? "Mensual" : "Semanal"}
+              {g === "monthly" ? t.filters.monthly : t.filters.weekly}
             </button>
           ))}
         </div>
@@ -128,19 +131,19 @@ export default function TrendsPage() {
                     </div>
                   ))}
                 </div>
-                {DAYS.map((day) => (
-                  <div key={day} className="flex flex-col gap-0.5">
+                {DAY_INDICES.map((dayIdx) => (
+                  <div key={dayIdx} className="flex flex-col gap-0.5">
                     <div className="h-6 flex items-center justify-center">
-                      <span className="text-[9px] text-text-muted font-medium">{day}</span>
+                      <span className="text-[9px] text-text-muted font-medium">{DAYS[dayIdx]}</span>
                     </div>
                     {HOURS.map((hour) => {
-                      const cell = heatmap.find((c) => c.day === day && c.hour === hour);
+                      const cell = heatmap.find((c) => c.day === dayIdx && c.hour === hour);
                       return (
                         <div
                           key={hour}
                           className="w-10 h-7 rounded-sm"
                           style={{ background: getHeatColor(cell?.count ?? 0) }}
-                          title={cell?.count ? `${day} ${hour}:00 — ${cell.count} sims` : "—"}
+                          title={cell?.count ? `${DAYS[dayIdx]} ${hour}:00 — ${cell.count} ${t.charts.simAbbrev}` : "—"}
                         />
                       );
                     })}

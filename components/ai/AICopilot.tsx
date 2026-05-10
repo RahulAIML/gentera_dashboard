@@ -16,6 +16,7 @@ import {
 import { useI18n } from "@/lib/i18n";
 import { fmtPercent } from "@/lib/utils/formatters";
 import type { AIInsight } from "@/types/analytics";
+import type { Dict } from "@/lib/i18n/locales/es";
 
 function severityIcon(severity: AIInsight["severity"]) {
   switch (severity) {
@@ -40,30 +41,33 @@ function buildInsights(
   interactionKPIs: ReturnType<typeof computeInteractionKPIs>,
   activityKPIs: ReturnType<typeof computeActivityKPIs>,
   userKPIs: ReturnType<typeof computeUserKPIs>,
+  t: Dict,
 ): AIInsight[] {
   if (!sims.length) return [];
   const insights: AIInsight[] = [];
 
   // 1. Performance overview
   const kpis = computeKPISummary(sims as any, []);
+  const statusText = kpis.passRate < 0.5 ? t.ai.belowMin : kpis.passRate < 0.7 ? t.ai.withinRange : t.ai.optimal;
   insights.push({
     id: "perf-overview",
     type: "trend",
     severity: kpis.passRate < 0.5 ? "critical" : kpis.passRate < 0.7 ? "warning" : "success",
-    title: "Resumen de rendimiento",
-    description: `Tasa de aprobación: ${fmtPercent(kpis.passRate, 0)} | Puntaje promedio: ${kpis.averageScore.toFixed(1)}% — ${kpis.passRate < 0.5 ? "Por debajo del umbral mínimo (50%)." : kpis.passRate < 0.7 ? "Dentro de rango, con margen de mejora." : "Rendimiento óptimo."}`,
+    title: t.ai.perfSummary,
+    description: `${t.charts.passRateLabel}: ${fmtPercent(kpis.passRate, 0)} | ${t.charts.avgScoreLabel}: ${kpis.averageScore.toFixed(1)}% — ${statusText}`,
     metric: fmtPercent(kpis.passRate, 0),
   });
 
   // 2. Best-performing activity
   if (activityKPIs.length) {
     const best = activityKPIs.reduce((a, b) => a.passRate > b.passRate ? a : b);
+    const name = best.activityName.length > 28 ? best.activityName.slice(0, 28) + "…" : best.activityName;
     insights.push({
       id: "best-activity",
       type: "achievement",
       severity: "success",
-      title: `Mejor actividad: ${best.activityName.length > 28 ? best.activityName.slice(0, 28) + "…" : best.activityName}`,
-      description: `${fmtPercent(best.passRate, 0)} de tasa de aprobación con promedio de ${best.averageScore.toFixed(1)}% en ${best.simulationCount} simulaciones.`,
+      title: `${t.ai.bestActivity}: ${name}`,
+      description: `${fmtPercent(best.passRate, 0)} ${t.charts.passRateLabel.toLowerCase()} — ${best.averageScore.toFixed(1)}% avg — ${best.simulationCount} ${t.charts.simAbbrev}`,
       metric: fmtPercent(best.passRate, 0),
       relatedEntity: best.activityName,
     });
@@ -73,12 +77,13 @@ function buildInsights(
   if (activityKPIs.length) {
     const worst = activityKPIs.reduce((a, b) => a.passRate < b.passRate ? a : b);
     if (worst.passRate < 0.5) {
+      const name = worst.activityName.length > 28 ? worst.activityName.slice(0, 28) + "…" : worst.activityName;
       insights.push({
         id: "worst-activity",
         type: "risk",
         severity: worst.passRate < 0.3 ? "critical" : "warning",
-        title: `Actividad crítica: ${worst.activityName.length > 28 ? worst.activityName.slice(0, 28) + "…" : worst.activityName}`,
-        description: `Solo ${fmtPercent(worst.passRate, 0)} de aprobación. Requiere revisión urgente del contenido y plan de entrenamiento.`,
+        title: `${t.ai.criticalActivity}: ${name}`,
+        description: `${fmtPercent(worst.passRate, 0)} ${t.charts.passRateLabel.toLowerCase()} — ${worst.simulationCount} ${t.charts.simAbbrev}`,
         metric: fmtPercent(worst.passRate, 0),
         relatedEntity: worst.activityName,
       });
@@ -93,8 +98,8 @@ function buildInsights(
       id: "hardest-round",
       type: "risk",
       severity: hardest.passRate < 0.3 ? "critical" : "warning",
-      title: `${hardest.label} es la más difícil`,
-      description: `Solo ${fmtPercent(hardest.passRate, 0)} de aprobación en ${hardest.totalApplicable} simulaciones aplicables. Priorizar refuerzo en esta interacción.`,
+      title: `${hardest.label} ${t.ai.hardestRound}`,
+      description: `${fmtPercent(hardest.passRate, 0)} — ${hardest.totalApplicable} ${t.charts.simulationsLabel.toLowerCase()}`,
       metric: fmtPercent(hardest.passRate, 0),
       relatedEntity: hardest.label,
     });
@@ -118,8 +123,8 @@ function buildInsights(
         id: "month-trend",
         type: "trend",
         severity: delta > 0 ? "success" : "warning",
-        title: delta > 0 ? "Tendencia mensual positiva" : "Tendencia mensual negativa",
-        description: `El puntaje promedio ${delta > 0 ? "aumentó" : "bajó"} ${Math.abs(delta).toFixed(1)} puntos respecto al mes anterior.`,
+        title: delta > 0 ? t.ai.monthTrendUp : t.ai.monthTrendDown,
+        description: `${delta > 0 ? "+" : ""}${Math.abs(delta).toFixed(1)} pts ${t.ai.vsPrevious}`,
         metric: `${delta > 0 ? "+" : ""}${delta.toFixed(1)} pts`,
         delta,
       });
@@ -133,9 +138,9 @@ function buildInsights(
       id: "coaching-needed",
       type: "risk",
       severity: needCoaching.length > 5 ? "critical" : "warning",
-      title: `${needCoaching.length} asesores necesitan coaching`,
-      description: `${needCoaching.length} asesores tienen tasa de aprobación inferior al 50%. Se recomienda intervención personalizada.`,
-      metric: `${needCoaching.length} asesores`,
+      title: `${needCoaching.length} ${t.ai.needsCoaching}`,
+      description: `${needCoaching.length} ${t.ai.advisors} < 50% ${t.charts.passRateLabel.toLowerCase()}`,
+      metric: `${needCoaching.length} ${t.ai.advisors}`,
     });
   }
 
@@ -151,8 +156,8 @@ export function AICopilot() {
   const activityKPIs    = useMemo(() => computeActivityKPIs(simulations),    [simulations]);
   const userKPIs        = useMemo(() => computeUserKPIs(simulations),         [simulations]);
   const insights        = useMemo(
-    () => buildInsights(simulations, interactionKPIs, activityKPIs, userKPIs),
-    [simulations, interactionKPIs, activityKPIs, userKPIs]
+    () => buildInsights(simulations, interactionKPIs, activityKPIs, userKPIs, t),
+    [simulations, interactionKPIs, activityKPIs, userKPIs, t]
   );
 
   return (
@@ -207,7 +212,7 @@ export function AICopilot() {
                   </div>
                   <div>
                     <h2 className="text-sm font-semibold text-text-primary">{t.ai.copilot}</h2>
-                    <p className="text-[10px] text-text-muted">{simulations.length} simulaciones analizadas</p>
+                    <p className="text-[10px] text-text-muted">{simulations.length} {t.ai.simsAnalyzed}</p>
                   </div>
                 </div>
                 <button
@@ -224,11 +229,11 @@ export function AICopilot() {
                 <div className="flex items-center gap-1.5 mb-1">
                   <Zap className="w-3 h-3 text-brand-400" />
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-400">
-                    Contexto activo
+                    {t.ai.activeContext}
                   </span>
                 </div>
                 <p className="text-xs text-text-muted">
-                  Analizando {simulations.length} simulaciones en tiempo real
+                  {t.ai.analyzingSims} ({simulations.length})
                 </p>
               </div>
 
@@ -283,7 +288,7 @@ export function AICopilot() {
               {/* Footer */}
               <div className="px-5 py-3 border-t border-border shrink-0">
                 <p className="text-[10px] text-text-disabled text-center">
-                  Insights generados automáticamente · Datos en tiempo real
+                  {t.ai.autoGenerated}
                 </p>
               </div>
             </motion.div>

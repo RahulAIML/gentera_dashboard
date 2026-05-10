@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { TrendingUp, AlertTriangle, CheckCircle, Zap, Info, Sparkles } from "lucide-react";
 import type { AIInsight } from "@/types/analytics";
 import { cn } from "@/lib/utils/cn";
+import { useI18n } from "@/lib/i18n";
+import type { Dict } from "@/lib/i18n/locales/es";
 
 const SEV: Record<string, { card: string; icon: string; badge: string; dot: string }> = {
   success:  { card: "border-emerald-500/25 bg-emerald-500/5",  icon: "text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",  dot: "bg-emerald-400" },
@@ -17,15 +19,19 @@ const TYPE_ICONS = {
   anomaly:     AlertTriangle,
   opportunity: Zap,
 };
-const TYPE_LABELS: Record<string, string> = {
-  achievement: "Logro",
-  trend:       "Tendencia",
-  risk:        "Riesgo",
-  anomaly:     "Anomalía",
-  opportunity: "Oportunidad",
-};
+function getTypeLabel(type: string, t: Dict): string {
+  const map: Record<string, string> = {
+    achievement: t.ai.achievement,
+    trend:       t.ai.trend,
+    risk:        t.ai.risk,
+    anomaly:     t.ai.anomaly,
+    opportunity: t.ai.opportunity,
+  };
+  return map[type] ?? type;
+}
 
 export function AIInsightCard({ insight, index = 0 }: { insight: AIInsight; index?: number }) {
+  const { t } = useI18n();
   const s = SEV[insight.severity] ?? SEV.info;
   const Icon = TYPE_ICONS[insight.type] ?? Info;
 
@@ -42,7 +48,7 @@ export function AIInsightCard({ insight, index = 0 }: { insight: AIInsight; inde
           <div className="flex items-start gap-2 flex-wrap mb-1">
             <span className="text-[11px] font-semibold text-text-primary leading-snug">{insight.title}</span>
             <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full border font-bold uppercase tracking-wider shrink-0", s.badge)}>
-              {TYPE_LABELS[insight.type]}
+              {getTypeLabel(insight.type, t)}
             </span>
           </div>
           <p className="text-[11px] text-text-secondary leading-relaxed">{insight.description}</p>
@@ -59,6 +65,7 @@ export function AIInsightCard({ insight, index = 0 }: { insight: AIInsight; inde
 }
 
 export function InsightsPanel({ insights, loading }: { insights: AIInsight[]; loading?: boolean }) {
+  const { t } = useI18n();
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -70,11 +77,11 @@ export function InsightsPanel({ insights, loading }: { insights: AIInsight[]; lo
           <Sparkles className="w-4 h-4 text-brand-400" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-text-primary">Insights IA</h3>
-          <p className="text-[10px] text-text-muted">Análisis automático del período</p>
+          <h3 className="text-sm font-semibold text-text-primary">{t.ai.insights}</h3>
+          <p className="text-[10px] text-text-muted">{t.ai.autoAnalysis}</p>
         </div>
         <span className="ml-auto text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">
-          IA
+          AI
         </span>
       </div>
 
@@ -86,8 +93,8 @@ export function InsightsPanel({ insights, loading }: { insights: AIInsight[]; lo
         <div className="flex-1 flex flex-col items-center justify-center py-8 gap-3">
           <CheckCircle className="w-10 h-10 text-emerald-400/60" />
           <div className="text-center">
-            <p className="text-sm font-semibold text-text-secondary">Sin alertas activas</p>
-            <p className="text-xs text-text-muted mt-1">El sistema no detecta anomalías</p>
+            <p className="text-sm font-semibold text-text-secondary">{t.ai.noAlerts}</p>
+            <p className="text-xs text-text-muted mt-1">{t.ai.noAnomalies}</p>
           </div>
         </div>
       ) : (

@@ -304,7 +304,7 @@ export interface LeaderboardEntry {
 }
 
 export interface HeatmapCell {
-  day: string;
+  day: number;
   hour: number;
   count: number;
   avgScore: number;

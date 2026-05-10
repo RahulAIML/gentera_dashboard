@@ -4,7 +4,7 @@ import { useQueryClient, useIsFetching } from "@tanstack/react-query";
 import { useState } from "react";
 import { cn } from "@/lib/utils/cn";
 import { format } from "date-fns";
-import { es as esLocale } from "date-fns/locale";
+import { es as esLocale, enUS as enLocale } from "date-fns/locale";
 import { useI18n } from "@/lib/i18n";
 
 interface TopBarProps {
@@ -16,7 +16,7 @@ export function TopBar({ title, subtitle }: TopBarProps) {
   const qc = useQueryClient();
   const isFetching = useIsFetching();
   const [refreshing, setRefreshing] = useState(false);
-  const { locale, toggleLocale } = useI18n();
+  const { t, locale, toggleLocale } = useI18n();
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -25,7 +25,7 @@ export function TopBar({ title, subtitle }: TopBarProps) {
   }
 
   const now = new Date();
-  const dateStr = format(now, "d MMM yyyy", { locale: esLocale });
+  const dateStr = format(now, "d MMM yyyy", { locale: locale === "es" ? esLocale : enLocale });
 
   return (
     <header className="flex items-center justify-between px-5 h-13 border-b border-border bg-surface-900/80 backdrop-blur-xl shrink-0 relative" style={{ minHeight: "52px" }}>
@@ -55,7 +55,7 @@ export function TopBar({ title, subtitle }: TopBarProps) {
             isFetching > 0 ? "text-brand-400 bg-brand-400" : "text-emerald-400 bg-emerald-400"
           )} />
           <span className="text-[10px] font-medium text-text-muted">
-            {isFetching > 0 ? "Cargando" : "En vivo"}
+            {isFetching > 0 ? t.common.loading.replace("…", "") : t.common.live}
           </span>
         </div>
 
@@ -77,7 +77,7 @@ export function TopBar({ title, subtitle }: TopBarProps) {
         <button
           onClick={handleRefresh}
           className="w-8 h-8 rounded-lg bg-surface-800 border border-border flex items-center justify-center text-text-muted hover:text-brand-400 hover:border-brand-500/40 transition-all"
-          title="Actualizar datos"
+          title={t.common.refresh}
         >
           <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />
         </button>

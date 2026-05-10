@@ -2,21 +2,24 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import type { ScoreDistributionBucket } from "@/types/analytics";
+import { useI18n } from "@/lib/i18n";
+import type { Dict } from "@/lib/i18n/locales/es";
 
 const COLORS = ["#fb7185", "#fbbf24", "#818cf8", "#60a5fa", "#34d399"];
 
-function Tip({ active, payload }: any) {
+function Tip({ active, payload, t }: any) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload as ScoreDistributionBucket;
+  const tt = t as Dict;
   return (
     <div className="bg-surface-750 border border-border-strong rounded-xl p-3 shadow-2xl">
-      <p className="text-[11px] font-bold text-text-primary mb-2">Rango {d.range}</p>
+      <p className="text-[11px] font-bold text-text-primary mb-2">{tt.charts.rangeLabel} {d.range}</p>
       <div className="flex justify-between gap-4 text-xs">
-        <span className="text-text-muted">Simulaciones</span>
+        <span className="text-text-muted">{tt.charts.simulationsLabel}</span>
         <span className="font-mono font-bold text-text-primary">{d.count}</span>
       </div>
       <div className="flex justify-between gap-4 text-xs">
-        <span className="text-text-muted">Porcentaje</span>
+        <span className="text-text-muted">{tt.charts.percentageLabel}</span>
         <span className="font-mono font-bold text-brand-400">{(d.percentage * 100).toFixed(1)}%</span>
       </div>
     </div>
@@ -24,6 +27,7 @@ function Tip({ active, payload }: any) {
 }
 
 export function ScoreDistribution({ data, loading }: { data: ScoreDistributionBucket[]; loading?: boolean }) {
+  const { t } = useI18n();
   if (loading) {
     return (
       <div className="glass rounded-2xl p-5 h-[260px]">
@@ -42,8 +46,8 @@ export function ScoreDistribution({ data, loading }: { data: ScoreDistributionBu
       className="glass rounded-2xl p-5"
     >
       <div className="mb-5">
-        <h3 className="text-sm font-bold text-text-primary">Distribución de Puntajes</h3>
-        <p className="text-[11px] text-text-muted mt-0.5">Frecuencia de calificaciones por rango</p>
+        <h3 className="text-sm font-bold text-text-primary">{t.charts.scoreDistribution}</h3>
+        <p className="text-[11px] text-text-muted mt-0.5">{t.charts.scoreDistSub}</p>
       </div>
 
       <ResponsiveContainer width="100%" height={160}>
@@ -51,7 +55,7 @@ export function ScoreDistribution({ data, loading }: { data: ScoreDistributionBu
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
           <XAxis dataKey="range" tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <Tooltip content={<Tip />} />
+          <Tooltip content={<Tip t={t} />} />
           <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={52}>
             {data.map((_, i) => <Cell key={i} fill={COLORS[i]} fillOpacity={0.85} />)}
           </Bar>

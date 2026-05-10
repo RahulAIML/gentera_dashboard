@@ -6,11 +6,14 @@ import {
 import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
 import type { TrendDataPoint } from "@/types/analytics";
+import { useI18n } from "@/lib/i18n";
+import type { Dict } from "@/lib/i18n/locales/es";
 
 interface Props { data: TrendDataPoint[]; loading?: boolean; }
 
-function CustomTooltip({ active, payload, label }: any) {
+function CustomTooltip({ active, payload, label, t }: any) {
   if (!active || !payload?.length) return null;
+  const tt = t as Dict;
   return (
     <div className="bg-surface-750 border border-border-strong rounded-xl p-3.5 shadow-2xl min-w-[190px]">
       <p className="text-xs font-bold text-text-primary mb-2.5 capitalize">{label}</p>
@@ -19,8 +22,8 @@ function CustomTooltip({ active, payload, label }: any) {
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
             <span className="text-text-muted">
-              {p.dataKey === "passRate100" ? "Tasa aprobación" :
-               p.dataKey === "averageScore" ? "Puntaje promedio" : "Simulaciones"}
+              {p.dataKey === "passRate100" ? tt.charts.passRateLabel :
+               p.dataKey === "averageScore" ? tt.charts.avgScoreLabel : tt.charts.simulationsLabel}
             </span>
           </div>
           <span className="font-mono font-bold text-text-primary">
@@ -33,6 +36,7 @@ function CustomTooltip({ active, payload, label }: any) {
 }
 
 export function ScoreTrendChart({ data, loading }: Props) {
+  const { t } = useI18n();
   const chartData = data.map((d) => ({ ...d, passRate100: d.passRate * 100 }));
 
   if (loading) {
@@ -49,8 +53,8 @@ export function ScoreTrendChart({ data, loading }: Props) {
     return (
       <div className="glass rounded-2xl p-5 h-[310px] flex flex-col items-center justify-center gap-3">
         <TrendingUp className="w-8 h-8 text-text-disabled" />
-        <p className="text-sm text-text-muted">Sin datos para el período seleccionado</p>
-        <p className="text-xs text-text-disabled">Ajusta los filtros de fecha o actividad</p>
+        <p className="text-sm text-text-muted">{t.charts.noDataPeriod}</p>
+        <p className="text-xs text-text-disabled">{t.charts.adjustFilters}</p>
       </div>
     );
   }
@@ -64,12 +68,12 @@ export function ScoreTrendChart({ data, loading }: Props) {
     >
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h3 className="text-sm font-bold text-text-primary">Tendencia de Rendimiento</h3>
-          <p className="text-[11px] text-text-muted mt-0.5">Evolución mensual del puntaje y tasa de aprobación</p>
+          <h3 className="text-sm font-bold text-text-primary">{t.charts.scoreTrend}</h3>
+          <p className="text-[11px] text-text-muted mt-0.5">{t.charts.scoreTrendSub}</p>
         </div>
         <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-surface-800 border border-border">
           <div className="w-1.5 h-1.5 rounded-full bg-brand-400" />
-          <span className="text-[10px] text-text-muted">{data.length} períodos</span>
+          <span className="text-[10px] text-text-muted">{data.length} {t.charts.periodsLabel}</span>
         </div>
       </div>
 
@@ -100,12 +104,12 @@ export function ScoreTrendChart({ data, loading }: Props) {
             tickLine={false}
             tickFormatter={(v) => `${v}%`}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip t={t} />} />
           <Legend
             wrapperStyle={{ fontSize: 10, color: "#a8aac8", paddingTop: 10 }}
             formatter={(v) =>
-              v === "averageScore" ? "Puntaje promedio" :
-              v === "passRate100"  ? "Tasa aprobación" : v
+              v === "averageScore" ? t.charts.avgScoreLabel :
+              v === "passRate100"  ? t.charts.passRateLabel : v
             }
           />
           <ReferenceLine y={60} stroke="#6366f1" strokeDasharray="4 4" strokeOpacity={0.25} />

@@ -3,23 +3,26 @@ import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import type { ActivityKPI } from "@/types/analytics";
 import { fmtPercent } from "@/lib/utils/formatters";
+import { useI18n } from "@/lib/i18n";
+import type { Dict } from "@/lib/i18n/locales/es";
 
 interface Props { data: ActivityKPI[]; loading?: boolean; metric?: "simulationCount" | "averageScore" | "passRate"; }
 
 const PALETTE = ["#6366f1","#8b5cf6","#10b981","#60a5fa","#fb7185","#22d3ee","#34d399","#fbbf24","#a78bfa"];
 
-function Tip({ active, payload }: any) {
+function Tip({ active, payload, t }: any) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload as ActivityKPI & { color: string };
+  const tt = t as Dict;
   return (
     <div className="bg-surface-750 border border-border-strong rounded-xl p-3.5 shadow-2xl max-w-[220px]">
       <p className="text-[11px] font-bold text-text-primary mb-2 leading-snug">{d.activityName}</p>
       <div className="space-y-1 text-xs">
         {[
-          ["Simulaciones", d.simulationCount, "text-brand-400"],
-          ["Puntaje prom.", `${d.averageScore.toFixed(0)}%`, "text-blue-400"],
-          ["Aprobación",   fmtPercent(d.passRate), "text-emerald-400"],
-          ["Usuarios",     d.uniqueUsers, "text-violet-400"],
+          [tt.charts.simulationsLabel, d.simulationCount, "text-brand-400"],
+          [tt.charts.avgScoreLabel, `${d.averageScore.toFixed(0)}%`, "text-blue-400"],
+          [tt.charts.passRateLabel, fmtPercent(d.passRate), "text-emerald-400"],
+          [tt.charts.usersLabel, d.uniqueUsers, "text-violet-400"],
         ].map(([label, val, cls]) => (
           <div key={String(label)} className="flex justify-between gap-3">
             <span className="text-text-muted">{label}</span>
@@ -32,6 +35,7 @@ function Tip({ active, payload }: any) {
 }
 
 export function ActivityChart({ data, loading, metric = "simulationCount" }: Props) {
+  const { t } = useI18n();
   if (loading) {
     return (
       <div className="glass rounded-2xl p-5 h-[300px]">
@@ -50,9 +54,9 @@ export function ActivityChart({ data, loading, metric = "simulationCount" }: Pro
   }));
 
   const labels: Record<string, string> = {
-    simulationCount: "Simulaciones por actividad",
-    averageScore:    "Puntaje promedio (%)",
-    passRate:        "Tasa de aprobación (%)",
+    simulationCount: t.charts.simsByActivity,
+    averageScore:    t.charts.avgScorePct,
+    passRate:        t.charts.passRatePct,
   };
 
   return (
@@ -63,15 +67,15 @@ export function ActivityChart({ data, loading, metric = "simulationCount" }: Pro
       className="glass rounded-2xl p-5"
     >
       <div className="mb-5">
-        <h3 className="text-sm font-bold text-text-primary">Uso por Actividad</h3>
-        <p className="text-[11px] text-text-muted mt-0.5">{labels[metric]} por caso de uso</p>
+        <h3 className="text-sm font-bold text-text-primary">{t.charts.activityUsage}</h3>
+        <p className="text-[11px] text-text-muted mt-0.5">{labels[metric]} {t.charts.perUseCase}</p>
       </div>
       <ResponsiveContainer width="100%" height={228}>
         <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 24, left: 4, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
           <XAxis type="number" tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis type="category" dataKey="shortName" tick={{ fill: "#a8aac8", fontSize: 10 }} axisLine={false} tickLine={false} width={144} />
-          <Tooltip content={<Tip />} />
+          <Tooltip content={<Tip t={t} />} />
           <Bar dataKey="val" radius={[0, 6, 6, 0]} maxBarSize={26}>
             {chartData.map((e, i) => (
               <Cell key={i} fill={e.color} fillOpacity={0.9} />

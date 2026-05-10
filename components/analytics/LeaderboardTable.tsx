@@ -4,6 +4,7 @@ import { Trophy, Crown, Medal } from "lucide-react";
 import type { LeaderboardEntry } from "@/types/analytics";
 import { cn } from "@/lib/utils/cn";
 import { fmtPercent, initials } from "@/lib/utils/formatters";
+import { useI18n } from "@/lib/i18n";
 
 interface Props { entries: LeaderboardEntry[]; loading?: boolean; maxRows?: number; }
 
@@ -42,6 +43,8 @@ function ScoreBar({ score }: { score: number }) {
 }
 
 export function LeaderboardTable({ entries, loading, maxRows = 20 }: Props) {
+  const { t } = useI18n();
+
   if (loading) {
     return (
       <div className="glass rounded-2xl p-5">
@@ -71,8 +74,8 @@ export function LeaderboardTable({ entries, loading, maxRows = 20 }: Props) {
     >
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-bold text-text-primary">Ranking de Asesores</h3>
-          <p className="text-[11px] text-text-muted mt-0.5">Por puntaje promedio</p>
+          <h3 className="text-sm font-bold text-text-primary">{t.charts.leaderboard}</h3>
+          <p className="text-[11px] text-text-muted mt-0.5">{t.charts.leaderboardSub}</p>
         </div>
         <div className="w-8 h-8 rounded-xl bg-brand-500/10 flex items-center justify-center">
           <Trophy className="w-4 h-4 text-brand-400" />
@@ -121,7 +124,7 @@ export function LeaderboardTable({ entries, loading, maxRows = 20 }: Props) {
               {/* Name */}
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-semibold text-text-primary truncate">{entry.userName}</div>
-                <div className="text-[10px] text-text-disabled">{entry.simulations} sim.</div>
+                <div className="text-[10px] text-text-disabled">{entry.simulations} {t.charts.simAbbrev}</div>
               </div>
 
               {/* Score bar */}
@@ -140,7 +143,7 @@ export function LeaderboardTable({ entries, loading, maxRows = 20 }: Props) {
 
       {entries.length > maxRows && (
         <div className="mt-3 pt-3 border-t border-border text-center">
-          <span className="text-[11px] text-text-muted">+{entries.length - maxRows} asesores más</span>
+          <span className="text-[11px] text-text-muted">+{entries.length - maxRows} {t.charts.moreItems}</span>
         </div>
       )}
     </motion.div>

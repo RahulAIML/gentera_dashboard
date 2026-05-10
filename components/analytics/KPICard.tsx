@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Minus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { useI18n } from "@/lib/i18n";
 
 export type KPIAccent = "brand" | "amber" | "blue" | "violet" | "emerald" | "rose" | "coral" | "cyan";
 
@@ -77,6 +78,7 @@ export function KPICard({
   title, value, subtitle, delta, trend, icon: Icon,
   accent = "brand", loading, index = 0,
 }: KPICardProps) {
+  const { t } = useI18n();
   const th = THEMES[accent];
 
   if (loading) {
@@ -133,7 +135,7 @@ export function KPICard({
             <span className={cn("text-[11px] font-semibold", trendColor)}>
               {delta >= 0 ? "+" : ""}{delta.toFixed(1)}%
             </span>
-            <span className="text-[10px] text-text-disabled">vs anterior</span>
+            <span className="text-[10px] text-text-disabled">{t.ai.vsPrevious}</span>
           </div>
         )}
       </div>
