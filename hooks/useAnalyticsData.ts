@@ -1,15 +1,23 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchActivities, fetchSimulations, fetchMembers } from "@/lib/api/fetchers";
+import { fetchActivities, fetchSimulations, fetchMembers, fetchAdmins } from "@/lib/api/fetchers";
 import {
   normalizeActivities,
   normalizeSimulations,
   normalizeMembers,
+  normalizeAdmins,
   buildActivityMap,
 } from "@/lib/analytics/normalizer";
 import { useFilterStore } from "@/lib/store/filterStore";
+import { useScopeStore } from "@/lib/store/scopeStore";
 import { applyFilters } from "@/lib/analytics/kpiEngine";
+import {
+  buildHierarchy,
+  resolveScope,
+  filterSimulationsByScope,
+  filterMembersByScope,
+} from "@/lib/analytics/hierarchy";
 
 export function useActivities() {
   return useQuery({
@@ -54,14 +62,42 @@ export function useSimulations() {
   };
 }
 
+export function useAdmins() {
+  return useQuery({
+    queryKey: ["admins"],
+    queryFn: fetchAdmins,
+    staleTime: 1000 * 60 * 10,
+    select: normalizeAdmins,
+  });
+}
+
+export function useHierarchy() {
+  const { data: admins } = useAdmins();
+  const { data: members } = useMembers();
+  return useMemo(() => {
+    if (!admins || !members) return null;
+    return buildHierarchy(admins, members);
+  }, [admins, members]);
+}
+
+export function useResolvedScope() {
+  const scope = useScopeStore((s) => s.scope);
+  const hierarchy = useHierarchy();
+  return useMemo(() => {
+    if (!hierarchy) return null;
+    return resolveScope(scope, hierarchy);
+  }, [scope, hierarchy]);
+}
+
 export function useFilteredSimulations() {
   const filters = useFilterStore();
   const { simulations, isLoading, error } = useSimulations();
+  const resolved = useResolvedScope();
 
-  const filtered = useMemo(
-    () => applyFilters(simulations, filters),
-    [simulations, filters]
-  );
+  const filtered = useMemo(() => {
+    const scoped = resolved ? filterSimulationsByScope(simulations, resolved) : simulations;
+    return applyFilters(scoped, filters);
+  }, [simulations, filters, resolved]);
 
   return { simulations: filtered, isLoading, error };
 }
@@ -70,13 +106,20 @@ export function useAnalytics() {
   const { simulations, isLoading, error } = useFilteredSimulations();
   const { data: activities } = useActivities();
   const { data: members } = useMembers();
+  const resolved = useResolvedScope();
+
+  const scopedMembers = useMemo(() => {
+    if (!members) return [];
+    return resolved ? filterMembersByScope(members, resolved) : members;
+  }, [members, resolved]);
 
   return {
     simulations,
     activities: activities ?? [],
-    members: members ?? [],
+    members: scopedMembers,
     isLoading,
     error,
     totalCount: simulations.length,
+    scope: resolved,
   };
 }

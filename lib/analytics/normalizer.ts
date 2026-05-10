@@ -96,6 +96,7 @@ export function normalizeMembers(raw: RawMember[]): NormalizedMember[] {
       name: m.mb_fullname,
       email: m.mb_email,
       userId: m.mb_user,
+      adminId: m.mb_admin,
       status: m.mb_status === 1 ? "active" : "inactive",
       line: m.mb_line || "Sin línea",
       branch: m.mb_branch || "Sin rama",
@@ -109,12 +110,22 @@ export function normalizeMembers(raw: RawMember[]): NormalizedMember[] {
   });
 }
 
+function classifyProfile(raw: string): import("@/types/analytics").AdminProfile {
+  const r = (raw ?? "").toLowerCase();
+  if (r === "supervisor") return "supervisor";
+  if (r === "admin") return "admin";
+  if (r === "tenant") return "tenant";
+  if (r === "dev") return "dev";
+  return "other";
+}
+
 export function normalizeAdmins(raw: RawAdmin[]): NormalizedAdmin[] {
   return raw.map((a) => ({
     id: a.rpa_id,
     name: a.rpa_full_name,
     email: a.rpa_email,
-    profileType: a.rpa_profile_type,
+    profileType: classifyProfile(a.rpa_profile_type),
+    rawProfile: a.rpa_profile_type,
     parentId: a.rpa_parent,
     sede: a.rpa_sede || "",
     isCreator: a.rpa_mod_creator === 1,

@@ -137,6 +137,7 @@ export interface NormalizedMember {
   name: string;
   email: string;
   userId: string;
+  adminId: number;            // mb_admin — links participant to admin
   status: "active" | "inactive";
   line: string;
   branch: string;
@@ -148,15 +149,47 @@ export interface NormalizedMember {
   createdAt: Date;
 }
 
+export type AdminProfile = "tenant" | "supervisor" | "admin" | "dev" | "other";
+
 export interface NormalizedAdmin {
   id: number;
   name: string;
   email: string;
-  profileType: string;
+  profileType: AdminProfile;
+  rawProfile: string;
   parentId: number;
   sede: string;
   isCreator: boolean;
   isAdmin: boolean;
+}
+
+// ---- Hierarchy ---------------------------------------------------------------
+
+export interface AdminNode {
+  admin: NormalizedAdmin;
+  participants: NormalizedMember[];      // members with mb_admin === admin.id
+  participantIds: Set<number>;
+  participantUserIds: Set<string>;       // mb_user lowercased — used to match simulations
+}
+
+export interface SupervisorNode {
+  supervisor: NormalizedAdmin;
+  admins: AdminNode[];
+  participantIds: Set<number>;
+  participantUserIds: Set<string>;
+}
+
+export interface GenteraHierarchy {
+  supervisors: SupervisorNode[];
+  unsupervisedAdmins: AdminNode[];       // admins whose parent isn't a supervisor
+  byAdminId: Map<number, AdminNode>;
+  bySupervisorId: Map<number, SupervisorNode>;
+  totals: {
+    supervisors: number;
+    admins: number;
+    participants: number;
+    orphanParticipants: number;          // participants whose admin isn't found
+  };
 }
 
 // ---- KPI Types ---------------------------------------------------------------

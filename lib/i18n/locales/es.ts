@@ -91,6 +91,25 @@ export interface Dict {
     results:  string;
     search:   string;
   };
+  scope: {
+    title:           string;
+    executive:       string;
+    executiveSub:    string;
+    supervisor:      string;
+    admin:           string;
+    participant:     string;
+    selectScope:     string;
+    allOrg:          string;
+    teamSize:        string;
+    participants:    string;
+    admins:          string;
+    supervisors:     string;
+    noData:          string;
+    viewingAs:       string;
+    switchView:      string;
+    organization:    string;
+    hierarchy:       string;
+  };
 }
 
 export const es: Dict = {
@@ -170,6 +189,25 @@ export const es: Dict = {
     noAccount:      "¿No tienes cuenta?",
     hasAccount:     "¿Ya tienes cuenta?",
     demoFill:       "Rellenar con demo",
+  },
+  scope: {
+    title:        "Vista organizacional",
+    executive:    "Vista Ejecutiva",
+    executiveSub: "Toda la organización Gentera",
+    supervisor:   "Supervisor",
+    admin:        "Admin",
+    participant:  "Participante",
+    selectScope:  "Seleccionar vista",
+    allOrg:       "Toda la organización",
+    teamSize:     "Tamaño de equipo",
+    participants: "Participantes",
+    admins:       "Admins",
+    supervisors:  "Supervisores",
+    noData:       "Sin datos para esta vista",
+    viewingAs:    "Viendo como",
+    switchView:   "Cambiar vista",
+    organization: "Organización Gentera",
+    hierarchy:    "Jerarquía",
   },
   common: {
     loading:    "Cargando…",

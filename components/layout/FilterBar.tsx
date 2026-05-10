@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils/cn";
 import { useFilterStore } from "@/lib/store/filterStore";
 import { useActivities } from "@/hooks/useAnalyticsData";
 import { useI18n } from "@/lib/i18n";
+import { ScopeSelector } from "@/components/layout/ScopeSelector";
 
 const QUICK_ES = [
   { labelKey: "last7d",    get: () => ({ start: subDays(new Date(), 7),    end: endOfDay(new Date()) }) },
@@ -34,6 +35,11 @@ export function FilterBar() {
   return (
     <div className="border-b border-border bg-surface-900/95 backdrop-blur-xl sticky top-0 z-20">
       <div className="flex items-center gap-2 px-4 py-2.5 overflow-x-auto scrollbar-none">
+
+        {/* Scope (role hierarchy) selector */}
+        <ScopeSelector />
+
+        <div className="w-px h-4 bg-border shrink-0" />
 
         {/* Filter icon + badge */}
         <div className="flex items-center gap-1.5 shrink-0">
