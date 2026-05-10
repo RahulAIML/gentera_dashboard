@@ -80,6 +80,11 @@ export interface Dict {
     approved:   string;
     failed:     string;
     viewDetails: string;
+    advisor:    string;
+    performance: string;
+    interactions: string;
+    back:       string;
+    history:    string;
   };
   ai: {
     copilot:     string;
@@ -114,6 +119,12 @@ export interface Dict {
     optimal:           string;
     advisors:          string;
     vsPrevious:        string;
+    coachingRec:       string;
+    interactionNeedsReinforcement: string;
+    noInteractionIssues: string;
+    userAverage:       string;
+    sessionHistory:    string;
+    rank:              string;
   };
   auth: {
     login:          string;
