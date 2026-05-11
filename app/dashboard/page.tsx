@@ -79,7 +79,7 @@ export default function ExecutiveOverviewPage() {
           />
           <ExecutiveKPICard
             title={t.kpi.averageScore}
-            value={kpis.averageScore.toFixed(1)}
+            value={kpis.avgScore.toFixed(1)}
             icon={Target}
             accent="amber"
             loading={isLoading}
