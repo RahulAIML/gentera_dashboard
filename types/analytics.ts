@@ -199,6 +199,7 @@ export interface KPISummary {
   totalSimulations: number;
   uniqueUsers: number;
   averageScore: number;
+  avgScore: number; // Alias for backward compatibility
   passRate: number;           // 0-1
   totalActivities: number;
   activeDays: number;
