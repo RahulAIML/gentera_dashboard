@@ -1,5 +1,15 @@
 import { format, formatDistanceToNow, parseISO, isValid } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS } from "date-fns/locale";
+
+export type Locale = "es" | "en";
+
+function numberLocale(locale: Locale) {
+  return locale === "en" ? "en-US" : "es-MX";
+}
+
+function dateFnsLocale(locale: Locale) {
+  return locale === "en" ? enUS : es;
+}
 
 export function fmtScore(score: number): string {
   return `${Math.round(score)}%`;
@@ -9,35 +19,35 @@ export function fmtPercent(value: number, decimals = 1): string {
   return `${(value * 100).toFixed(decimals)}%`;
 }
 
-export function fmtNumber(n: number): string {
-  return new Intl.NumberFormat("es-MX").format(n);
+export function fmtNumber(n: number, locale: Locale = "es"): string {
+  return new Intl.NumberFormat(numberLocale(locale)).format(n);
 }
 
-export function fmtDate(date: Date | string | null): string {
+export function fmtDate(date: Date | string | null, locale: Locale = "es"): string {
   if (!date) return "—";
   const d = typeof date === "string" ? parseISO(date) : date;
   if (!isValid(d)) return "—";
-  return format(d, "dd MMM yyyy", { locale: es });
+  return format(d, "dd MMM yyyy", { locale: dateFnsLocale(locale) });
 }
 
-export function fmtDateTime(date: Date | string | null): string {
+export function fmtDateTime(date: Date | string | null, locale: Locale = "es"): string {
   if (!date) return "—";
   const d = typeof date === "string" ? parseISO(date) : date;
   if (!isValid(d)) return "—";
-  return format(d, "dd MMM yyyy HH:mm", { locale: es });
+  return format(d, "dd MMM yyyy HH:mm", { locale: dateFnsLocale(locale) });
 }
 
-export function fmtTimeAgo(date: Date | string | null): string {
+export function fmtTimeAgo(date: Date | string | null, locale: Locale = "es"): string {
   if (!date) return "—";
   const d = typeof date === "string" ? parseISO(date) : date;
   if (!isValid(d)) return "—";
-  return formatDistanceToNow(d, { addSuffix: true, locale: es });
+  return formatDistanceToNow(d, { addSuffix: true, locale: dateFnsLocale(locale) });
 }
 
-export function fmtMonthLabel(monthKey: string): string {
+export function fmtMonthLabel(monthKey: string, locale: Locale = "es"): string {
   const [year, month] = monthKey.split("-");
   const d = new Date(Number(year), Number(month) - 1, 1);
-  return format(d, "MMM yy", { locale: es });
+  return format(d, "MMM yy", { locale: dateFnsLocale(locale) });
 }
 
 export function fmtDelta(delta: number): string {

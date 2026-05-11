@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { format, subMonths, subDays, startOfMonth, endOfMonth, endOfDay } from "date-fns";
-import { SlidersHorizontal, X, ChevronDown, Calendar } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, Calendar, Check } from "lucide-react";
+import * as Popover from "@radix-ui/react-popover";
 import { cn } from "@/lib/utils/cn";
 import { useFilterStore } from "@/lib/store/filterStore";
 import { useActivities } from "@/hooks/useAnalyticsData";
@@ -24,6 +25,7 @@ export function FilterBar() {
     setDateRange, setActivityIds, setDiagnosisFilter, resetFilters,
   } = useFilterStore();
   const [showQuick, setShowQuick] = useState(false);
+  const [openFilters, setOpenFilters] = useState(false);
   const { t } = useI18n();
 
   const activeCount = [
@@ -33,23 +35,11 @@ export function FilterBar() {
   ].filter(Boolean).length;
 
   return (
-    <div className="border-b border-border bg-surface-900/95 backdrop-blur-xl sticky top-0 z-20">
-      <div className="flex items-center gap-2 px-4 py-2.5 overflow-x-auto scrollbar-none">
+    <div className="border-b border-border bg-surface-900/92 backdrop-blur-xl">
+      <div className="flex items-center gap-2 px-4 py-2.5 max-w-[1480px] mx-auto">
 
         {/* Scope (role hierarchy) selector */}
         <ScopeSelector />
-
-        <div className="w-px h-4 bg-border shrink-0" />
-
-        {/* Filter icon + badge */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <SlidersHorizontal className="w-3.5 h-3.5 text-text-muted" />
-          {activeCount > 0 && (
-            <span className="w-4 h-4 rounded-full bg-brand-500 text-white text-[9px] font-bold flex items-center justify-center">
-              {activeCount}
-            </span>
-          )}
-        </div>
 
         <div className="w-px h-4 bg-border shrink-0" />
 
@@ -110,76 +100,123 @@ export function FilterBar() {
 
         <div className="w-px h-4 bg-border shrink-0" />
 
-        {/* Activity filter chips */}
-        {activities && activities.length > 0 && (
-          <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
-            <span className="text-[10px] text-text-disabled uppercase tracking-wider font-medium">
-              {t.filters.activities}:
-            </span>
+        {/* Filter popover (activities + diagnosis) */}
+        <Popover.Root open={openFilters} onOpenChange={setOpenFilters}>
+          <Popover.Trigger asChild>
             <button
-              onClick={() => setActivityIds([])}
               className={cn(
-                "text-[11px] px-2.5 py-1 rounded-full border transition-all font-medium",
-                activityIds.length === 0
-                  ? "bg-brand-500/12 border-brand-500/40 text-brand-400"
-                  : "border-border text-text-muted hover:border-border-strong hover:text-text-secondary"
+                "h-8 px-3 rounded-lg flex items-center gap-2 transition-colors shrink-0",
+                "bg-surface-800/70 border border-border hover:border-brand-500/40",
+                openFilters && "border-brand-500/50 bg-surface-800",
               )}
             >
-              {t.filters.all}
+              <SlidersHorizontal className="w-3.5 h-3.5 text-text-muted" />
+              <span className="text-[11px] font-medium text-text-secondary">
+                {t.filters.activities} · {t.filters.diagnosis}
+              </span>
+              {activeCount > 0 && (
+                <span className="ml-0.5 w-4 h-4 rounded-full bg-brand-500 text-white text-[9px] font-bold flex items-center justify-center">
+                  {activeCount}
+                </span>
+              )}
             </button>
-            {activities.map((a) => (
-              <button
-                key={a.id}
-                onClick={() => {
-                  const next = activityIds.includes(a.id)
-                    ? activityIds.filter((x) => x !== a.id)
-                    : [...activityIds, a.id];
-                  setActivityIds(next);
-                }}
-                className={cn(
-                  "text-[11px] px-2.5 py-1 rounded-full border transition-all font-medium max-w-[160px] truncate",
-                  activityIds.includes(a.id)
-                    ? "bg-brand-500/12 border-brand-500/40 text-brand-400"
-                    : "border-border text-text-muted hover:border-border-strong hover:text-text-secondary"
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content
+              sideOffset={10}
+              align="start"
+              className="z-50 w-[360px] max-w-[calc(100vw-24px)] rounded-2xl border border-border-strong bg-surface-850 shadow-2xl overflow-hidden"
+            >
+              <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                <div className="text-[11px] font-semibold text-text-primary">{t.filters.title}</div>
+                {activeCount > 0 && (
+                  <button
+                    onClick={() => {
+                      resetFilters();
+                      setOpenFilters(false);
+                    }}
+                    className="text-[11px] font-medium text-rose-400 hover:text-rose-300 transition-colors"
+                  >
+                    {t.filters.reset}
+                  </button>
                 )}
-                title={a.name}
-              >
-                {a.name.length > 20 ? a.name.slice(0, 20) + "…" : a.name}
-              </button>
-            ))}
-          </div>
-        )}
+              </div>
 
-        <div className="w-px h-4 bg-border shrink-0" />
+              {/* Activities */}
+              <div className="px-4 py-3">
+                <div className="text-[10px] uppercase tracking-wider text-text-disabled font-semibold mb-2">
+                  {t.filters.activities}
+                </div>
+                <div className="space-y-1 max-h-[240px] overflow-y-auto pr-1">
+                  <button
+                    onClick={() => setActivityIds([])}
+                    className={cn(
+                      "w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg border text-[12px] transition-colors",
+                      activityIds.length === 0
+                        ? "bg-brand-500/10 border-brand-500/25 text-brand-300"
+                        : "border-border bg-surface-900/40 text-text-secondary hover:bg-surface-800/60",
+                    )}
+                  >
+                    <span>{t.filters.all}</span>
+                    {activityIds.length === 0 && <Check className="w-3.5 h-3.5" />}
+                  </button>
 
-        {/* Diagnosis filter */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[10px] text-text-disabled uppercase tracking-wider font-medium">
-            {t.filters.diagnosis}:
-          </span>
-          {(["all", "passed", "failed"] as const).map((f) => (
-            <button
-              key={f}
-              onClick={() => setDiagnosisFilter(f)}
-              className={cn(
-                "text-[11px] px-2.5 py-1 rounded-full border transition-all font-medium",
-                diagnosisFilter === f
-                  ? f === "passed"
-                    ? "bg-emerald-500/12 border-emerald-500/40 text-emerald-400"
-                    : f === "failed"
-                    ? "bg-rose-500/12 border-rose-500/40 text-rose-400"
-                    : "bg-brand-500/12 border-brand-500/40 text-brand-400"
-                  : "border-border text-text-muted hover:border-border-strong hover:text-text-secondary"
-              )}
-            >
-              {f === "all"
-                ? t.filters.all
-                : f === "passed"
-                ? "✓ " + t.filters.passed
-                : "✗ " + t.filters.failed}
-            </button>
-          ))}
-        </div>
+                  {activities?.map((a) => {
+                    const selected = activityIds.includes(a.id);
+                    return (
+                      <button
+                        key={a.id}
+                        onClick={() => {
+                          const next = selected
+                            ? activityIds.filter((x) => x !== a.id)
+                            : [...activityIds, a.id];
+                          setActivityIds(next);
+                        }}
+                        className={cn(
+                          "w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg border text-[12px] transition-colors",
+                          selected
+                            ? "bg-brand-500/10 border-brand-500/25 text-text-primary"
+                            : "border-border bg-surface-900/40 text-text-secondary hover:bg-surface-800/60",
+                        )}
+                        title={a.name}
+                      >
+                        <span className="truncate">{a.name}</span>
+                        {selected && <Check className="w-3.5 h-3.5 text-brand-300" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Diagnosis */}
+              <div className="px-4 py-3 border-t border-border">
+                <div className="text-[10px] uppercase tracking-wider text-text-disabled font-semibold mb-2">
+                  {t.filters.diagnosis}
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["all", "passed", "failed"] as const).map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setDiagnosisFilter(f)}
+                      className={cn(
+                        "h-9 rounded-lg border text-[12px] font-medium transition-colors",
+                        diagnosisFilter === f
+                          ? "bg-brand-500/10 border-brand-500/25 text-text-primary"
+                          : "border-border bg-surface-900/40 text-text-secondary hover:bg-surface-800/60",
+                      )}
+                    >
+                      {f === "all"
+                        ? t.filters.all
+                        : f === "passed"
+                        ? t.filters.passed
+                        : t.filters.failed}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
 
         {/* Reset */}
         {activeCount > 0 && (

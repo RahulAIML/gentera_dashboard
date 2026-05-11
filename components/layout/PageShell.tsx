@@ -15,6 +15,7 @@ interface PageShellProps {
   subtitle?: string;
   eyebrow?: string;            // small label above title
   actions?: ReactNode;
+  filters?: ReactNode;         // optional filter row rendered under header
   children: ReactNode;
 }
 
@@ -23,6 +24,7 @@ export function PageShell({
   subtitle,
   eyebrow,
   actions,
+  filters,
   children,
 }: PageShellProps) {
   const { t } = useI18n();
@@ -31,8 +33,8 @@ export function PageShell({
   return (
     <div className="min-h-full bg-surface-950">
       {/* ── Page Header ─────────────────────────────────── */}
-      <header className="px-8 pt-7 pb-5 border-b border-border bg-gradient-to-b from-surface-900/40 to-transparent">
-        <div className="max-w-[1440px] mx-auto">
+      <header className="px-6 md:px-8 pt-8 pb-6 border-b border-border bg-gradient-to-b from-surface-900/40 to-transparent">
+        <div className="max-w-[1480px] mx-auto">
           {eyebrow && (
             <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-400 mb-1.5">
               {eyebrow}
@@ -40,11 +42,11 @@ export function PageShell({
           )}
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div className="min-w-0 flex-1">
-              <h1 className="text-[22px] font-bold text-text-primary leading-tight tracking-tight">
+              <h1 className="text-[24px] md:text-[26px] font-bold text-text-primary leading-tight tracking-tight">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-[13px] text-text-muted mt-1.5 max-w-2xl leading-relaxed">
+                <p className="text-[13px] md:text-[14px] text-text-muted mt-2 max-w-2xl leading-relaxed">
                   {subtitle}
                 </p>
               )}
@@ -69,9 +71,16 @@ export function PageShell({
         </div>
       </header>
 
+      {/* ── Filter Row (sticky) ─────────────────────────── */}
+      {filters && (
+        <div className="sticky top-0 z-30">
+          {filters}
+        </div>
+      )}
+
       {/* ── Body ────────────────────────────────────────── */}
-      <div className="px-8 py-7">
-        <div className="max-w-[1440px] mx-auto space-y-6">{children}</div>
+      <div className="px-6 md:px-8 py-8">
+        <div className="max-w-[1480px] mx-auto space-y-8">{children}</div>
       </div>
     </div>
   );
@@ -111,12 +120,12 @@ export function PageSection({
         >
           <div className="min-w-0">
             {title && (
-              <h2 className="text-[13px] font-semibold text-text-primary leading-tight">
+              <h2 className="text-[14px] font-semibold text-text-primary leading-tight">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="text-[11px] text-text-muted mt-0.5">{description}</p>
+              <p className="text-[12px] text-text-muted mt-1 leading-relaxed">{description}</p>
             )}
           </div>
           {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}

@@ -14,10 +14,11 @@ import { useScopeStore } from "@/lib/store/scopeStore";
 import { applyFilters } from "@/lib/analytics/kpiEngine";
 import {
   buildHierarchy,
-  resolveScope,
+  resolveScopeLocalized,
   filterSimulationsByScope,
   filterMembersByScope,
 } from "@/lib/analytics/hierarchy";
+import { useI18n } from "@/lib/i18n";
 
 export function useActivities() {
   return useQuery({
@@ -82,11 +83,12 @@ export function useHierarchy() {
 
 export function useResolvedScope() {
   const scope = useScopeStore((s) => s.scope);
+  const { locale } = useI18n();
   const hierarchy = useHierarchy();
   return useMemo(() => {
     if (!hierarchy) return null;
-    return resolveScope(scope, hierarchy);
-  }, [scope, hierarchy]);
+    return resolveScopeLocalized(scope, hierarchy, locale);
+  }, [scope, hierarchy, locale]);
 }
 
 export function useFilteredSimulations() {

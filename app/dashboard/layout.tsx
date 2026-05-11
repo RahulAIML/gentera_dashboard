@@ -1,24 +1,64 @@
 "use client";
+import { useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import { PanelLeft, X } from "lucide-react";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { FilterBar } from "@/components/layout/FilterBar";
 import { AIAssistant } from "@/components/ai/AIAssistant";
+import { useI18n } from "@/lib/i18n";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex h-screen overflow-hidden bg-surface-950">
-      {/* Fixed Sidebar */}
-      <Sidebar />
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { locale } = useI18n();
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0 ml-56">
-        <FilterBar />
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+  return (
+    <div className="h-screen bg-surface-950 overflow-hidden">
+      <div className="h-full grid grid-cols-1 lg:grid-cols-[256px_1fr]">
+        {/* Desktop sidebar */}
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+
+        {/* Main column */}
+        <div className="min-w-0 flex flex-col h-full">
+          {/* Mobile header (nav toggle only). Page headers live inside pages. */}
+          <div className="lg:hidden h-12 border-b border-border bg-surface-900/92 backdrop-blur-xl flex items-center px-3">
+            <Dialog.Root open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+              <Dialog.Trigger asChild>
+                <button
+                  className="h-9 w-9 rounded-xl border border-border bg-surface-800/70 text-text-muted hover:text-text-primary hover:bg-surface-800 transition-colors flex items-center justify-center"
+                  aria-label="Open navigation"
+                >
+                  <PanelLeft className="w-4 h-4" />
+                </button>
+              </Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Overlay className="fixed inset-0 bg-black/35 backdrop-blur-[2px] z-40" />
+                <Dialog.Content className="fixed inset-y-0 left-0 z-50 w-[320px] max-w-[85vw] bg-surface-900 border-r border-border shadow-2xl">
+                  <div className="h-12 px-3 border-b border-border flex items-center justify-between">
+                    <div className="text-[12px] font-semibold text-text-primary">Gentera</div>
+                    <Dialog.Close asChild>
+                      <button
+                        className="h-9 w-9 rounded-xl border border-border bg-surface-800/70 text-text-muted hover:text-text-primary hover:bg-surface-800 transition-colors flex items-center justify-center"
+                        aria-label="Close navigation"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </Dialog.Close>
+                  </div>
+                  <Sidebar onNavigate={() => setMobileNavOpen(false)} />
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
+          </div>
+
+          <main className="flex-1 overflow-y-auto min-w-0">
+            {children}
+          </main>
+        </div>
       </div>
 
-      {/* AI Assistant Panel */}
-      <AIAssistant />
+      {/* AI Assistant */}
+      <AIAssistant key={locale} />
     </div>
   );
 }

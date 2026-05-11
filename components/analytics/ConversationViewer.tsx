@@ -2,12 +2,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MessageSquare, User, Bot, CheckCircle, XCircle, Minus,
+  User, Bot, CheckCircle, XCircle, Minus,
   ChevronDown, ChevronUp, Star,
 } from "lucide-react";
 import type { NormalizedSimulation, InteractionRound } from "@/types/analytics";
 import { cn } from "@/lib/utils/cn";
-import { fmtDateTime, fmtScore } from "@/lib/utils/formatters";
+import { fmtDateTime } from "@/lib/utils/formatters";
+import { useI18n } from "@/lib/i18n";
 
 interface RoundCardProps {
   round: InteractionRound;
@@ -16,6 +17,7 @@ interface RoundCardProps {
 
 function RoundCard({ round, index }: RoundCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const { t, locale } = useI18n();
 
   const scoreIcon = round.score === 1
     ? <CheckCircle className="w-4 h-4 text-emerald-400" />
@@ -42,7 +44,7 @@ function RoundCard({ round, index }: RoundCardProps) {
       >
         <div className="shrink-0">{scoreIcon}</div>
         <div className="flex-1 min-w-0">
-          <span className="text-xs font-semibold text-text-primary">Interacción {round.index}</span>
+          <span className="text-xs font-semibold text-text-primary">{t.charts.interactionLabel} {round.index}</span>
           {!expanded && round.prompt && (
             <span className="text-xs text-text-muted ml-2 truncate hidden sm:inline">
               — {round.prompt.slice(0, 60)}…
@@ -55,7 +57,7 @@ function RoundCard({ round, index }: RoundCardProps) {
               "text-[10px] font-bold px-2 py-0.5 rounded-full",
               round.score === 1 ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
             )}>
-              {round.score === 1 ? "✓ Aprobó" : "✗ No aprobó"}
+              {round.score === 1 ? `✓ ${t.table.approved}` : `✕ ${t.table.failed}`}
             </span>
           )}
           {expanded ? <ChevronUp className="w-3.5 h-3.5 text-text-muted" /> : <ChevronDown className="w-3.5 h-3.5 text-text-muted" />}
@@ -76,9 +78,11 @@ function RoundCard({ round, index }: RoundCardProps) {
               <div className="rounded-lg bg-surface-800 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Bot className="w-3.5 h-3.5 text-violet-400" />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-400">Escenario IA</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-400">
+                    {locale === "en" ? "AI scenario" : "Escenario IA"}
+                  </span>
                 </div>
-                <p className="text-xs text-text-secondary leading-relaxed">{round.prompt || "Sin contenido"}</p>
+                <p className="text-xs text-text-secondary leading-relaxed">{round.prompt || "—"}</p>
               </div>
 
               {/* User Response */}
@@ -86,7 +90,9 @@ function RoundCard({ round, index }: RoundCardProps) {
                 <div className="rounded-lg bg-brand-500/5 border border-brand-500/20 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <User className="w-3.5 h-3.5 text-brand-400" />
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-400">Respuesta del Asesor</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-400">
+                      {locale === "en" ? "Advisor response" : "Respuesta del asesor"}
+                    </span>
                   </div>
                   <p className="text-xs text-text-secondary leading-relaxed">{round.response}</p>
                 </div>
@@ -97,7 +103,9 @@ function RoundCard({ round, index }: RoundCardProps) {
                 <div className="rounded-lg bg-amber-500/5 border border-amber-500/20 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Star className="w-3.5 h-3.5 text-amber-400" />
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-400">Retroalimentación IA</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-400">
+                      {locale === "en" ? "AI feedback" : "Retroalimentación IA"}
+                    </span>
                   </div>
                   <p className="text-xs text-text-secondary leading-relaxed">{round.feedback}</p>
                 </div>
@@ -112,12 +120,10 @@ function RoundCard({ round, index }: RoundCardProps) {
 
 interface ConversationViewerProps {
   simulation: NormalizedSimulation;
-  onClose?: () => void;
 }
 
-export function ConversationViewer({ simulation, onClose }: ConversationViewerProps) {
-  const applicableRounds = simulation.rounds.filter((r) => r.applicable);
-  const passedRounds = applicableRounds.filter((r) => r.score === 1);
+export function ConversationViewer({ simulation }: ConversationViewerProps) {
+  const { t, locale } = useI18n();
 
   return (
     <div className="space-y-4">
@@ -126,7 +132,7 @@ export function ConversationViewer({ simulation, onClose }: ConversationViewerPr
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h3 className="text-sm font-bold text-text-primary">{simulation.activityName}</h3>
-            <p className="text-xs text-text-muted mt-0.5">{fmtDateTime(simulation.timestamp)}</p>
+            <p className="text-xs text-text-muted mt-0.5">{fmtDateTime(simulation.timestamp, locale)}</p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             <div className="text-center">
@@ -135,7 +141,7 @@ export function ConversationViewer({ simulation, onClose }: ConversationViewerPr
               }}>
                 {simulation.score}%
               </div>
-              <div className="text-[10px] text-text-muted uppercase tracking-wider">Puntaje</div>
+              <div className="text-[10px] text-text-muted uppercase tracking-wider">{t.table.score}</div>
             </div>
             <div className="w-px h-10 bg-border" />
             <div className={cn(
@@ -144,13 +150,13 @@ export function ConversationViewer({ simulation, onClose }: ConversationViewerPr
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                 : "bg-rose-500/10 text-rose-400 border-rose-500/30"
             )}>
-              {simulation.passed ? "✓ Diagnóstico Aprobatorio" : "✗ No Aprobatorio"}
+              {simulation.passed ? `✓ ${t.table.approved}` : `✕ ${t.table.failed}`}
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-text-primary tabular-nums">
                 {simulation.totalPoints}/{simulation.maxApplicablePoints}
               </div>
-              <div className="text-[10px] text-text-muted uppercase tracking-wider">Puntos</div>
+              <div className="text-[10px] text-text-muted uppercase tracking-wider">{locale === "en" ? "Points" : "Puntos"}</div>
             </div>
           </div>
         </div>

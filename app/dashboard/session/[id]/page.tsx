@@ -3,15 +3,13 @@ import { use, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, User, Calendar, BookOpen, Target, Brain } from "lucide-react";
 import Link from "next/link";
-import { TopBar } from "@/components/layout/TopBar";
+import { PageShell, PageSection } from "@/components/layout/PageShell";
+import { PageActions } from "@/components/layout/PageActions";
 import { ConversationViewer } from "@/components/analytics/ConversationViewer";
 import { useSimulations } from "@/hooks/useAnalyticsData";
 import { useI18n } from "@/lib/i18n";
 import { fmtDateTime } from "@/lib/utils/formatters";
 import { cn } from "@/lib/utils/cn";
-import { generateInsights } from "@/lib/analytics/insightEngine";
-import { computeInteractionKPIs, computeActivityKPIs, computeUserKPIs } from "@/lib/analytics/kpiEngine";
-import { AIInsightCard } from "@/components/analytics/AIInsightCard";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -20,7 +18,7 @@ interface Props {
 export default function SessionDrillDownPage({ params }: Props) {
   const { id } = use(params);
   const { simulations, isLoading } = useSimulations();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   const simulation = useMemo(
     () => simulations.find((s) => s.id === Number(id)),
@@ -45,30 +43,28 @@ export default function SessionDrillDownPage({ params }: Props) {
 
   if (isLoading) {
     return (
-      <div className="min-h-full bg-surface-950">
-        <TopBar title={t.common.loadingSession} />
-        <div className="p-6 space-y-4 max-w-4xl mx-auto">
+      <PageShell title={t.common.loadingSession} actions={<PageActions />}>
+        <div className="space-y-4 max-w-5xl">
           <div className="skeleton-shimmer h-32 rounded-2xl" />
           <div className="skeleton-shimmer h-64 rounded-2xl" />
           <div className="skeleton-shimmer h-48 rounded-2xl" />
         </div>
-      </div>
+      </PageShell>
     );
   }
 
   if (!simulation) {
     return (
-      <div className="min-h-full bg-surface-950">
-        <TopBar title={t.common.sessionNotFound} />
-        <div className="p-6 max-w-4xl mx-auto">
-          <div className="glass-card rounded-2xl p-12 text-center">
+      <PageShell title={t.common.sessionNotFound} actions={<PageActions />}>
+        <PageSection>
+          <div className="p-8 text-center">
             <p className="text-text-secondary mb-4">{t.common.sessionNotFound} #{id}</p>
-            <Link href="/dashboard/simulation" className="text-sm text-brand-400 hover:text-brand-300">
+            <Link href="/dashboard/simulation" className="text-sm text-brand-300 hover:text-brand-200">
               ← {t.common.back}
             </Link>
           </div>
-        </div>
-      </div>
+        </PageSection>
+      </PageShell>
     );
   }
 
@@ -80,17 +76,16 @@ export default function SessionDrillDownPage({ params }: Props) {
   const sessionApplicableRounds = simulation.rounds.filter((r) => r.applicable).length;
 
   return (
-    <div className="min-h-full bg-surface-950">
-      <TopBar
-        title={`Sesión #${simulation.id}`}
-        subtitle={simulation.activityName}
-      />
-
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
+    <PageShell
+      title={locale === "en" ? `Session #${simulation.id}` : `Sesión #${simulation.id}`}
+      subtitle={simulation.activityName}
+      actions={<PageActions />}
+    >
+      <div className="space-y-6">
         {/* Back button */}
         <Link
           href="/dashboard/simulation"
-          className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-brand-400 transition-colors"
+          className="inline-flex items-center gap-2 text-[13px] text-text-muted hover:text-brand-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           {t.common.back}
@@ -132,7 +127,7 @@ export default function SessionDrillDownPage({ params }: Props) {
               </div>
               <div>
                 <p className="text-[10px] text-text-muted uppercase tracking-wider">{t.table.date}</p>
-                <p className="text-sm font-semibold text-text-primary mt-0.5">{fmtDateTime(simulation.timestamp)}</p>
+                <p className="text-sm font-semibold text-text-primary mt-0.5">{fmtDateTime(simulation.timestamp, locale)}</p>
               </div>
             </div>
 
@@ -175,11 +170,15 @@ export default function SessionDrillDownPage({ params }: Props) {
                     <span className="text-[9px] font-bold text-rose-400">{r.index}</span>
                   </div>
                   <div>
-                    <p className="text-text-primary font-medium">Interaction {r.index} {t.ai.interactionNeedsReinforcement}</p>
+                    <p className="text-text-primary font-medium">
+                      {t.charts.interactionLabel} {r.index} {t.ai.interactionNeedsReinforcement}
+                    </p>
                     <p className="text-text-muted leading-relaxed mt-0.5">
                       {r.feedback
                         ? r.feedback
-                        : "Review the advisor's response in this interaction to identify areas for improvement in scenario handling."}
+                        : locale === "en"
+                          ? "Review the advisor’s response for this interaction to identify what to reinforce in the scenario flow."
+                          : "Revisa la respuesta del asesor en esta interacción para identificar qué reforzar en el flujo del escenario."}
                     </p>
                   </div>
                 </div>
@@ -228,7 +227,7 @@ export default function SessionDrillDownPage({ params }: Props) {
                   >
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-medium text-text-primary truncate">{s.activityName}</div>
-                      <div className="text-[10px] text-text-muted">{fmtDateTime(s.timestamp)}</div>
+                      <div className="text-[10px] text-text-muted">{fmtDateTime(s.timestamp, locale)}</div>
                     </div>
                     <div className={cn(
                       "text-xs font-mono font-bold tabular-nums",
@@ -248,6 +247,6 @@ export default function SessionDrillDownPage({ params }: Props) {
           </motion.div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

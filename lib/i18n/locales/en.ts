@@ -10,6 +10,11 @@ export const en: Dict = {
     leaderboard:    "Leaderboard",
     org:            "Organization",
     activities:     "Activities",
+    sections: {
+      analytics:    "Analytics",
+      performance:  "Performance",
+      organization: "Organization",
+    },
   },
   kpi: {
     totalSimulations: "Simulations",
@@ -20,6 +25,7 @@ export const en: Dict = {
     totalActivities:  "Activities",
   },
   filters: {
+    title:      "Filters",
     dateRange:  "Date range",
     activities: "Activities",
     diagnosis:  "Diagnosis",
@@ -126,6 +132,15 @@ export const en: Dict = {
     userAverage:       "Advisor average",
     sessionHistory:    "History of",
     rank:              "Global rank",
+    assistantIntro:    "Ask about KPIs, trends, interaction risks, and coaching opportunities. Answers are grounded in the current dashboard scope and filters.",
+    assistantPlaceholder: "Ask about KPIs, trends, coaching…",
+    sendMessage:       "Send message",
+    prompts: {
+      kpiSummary: "Summarize the key KPIs for the current scope and date range.",
+      trend:      "What trend stands out in the last periods, and why?",
+      riskRound:  "Which interaction round is the biggest risk, and what should we coach?",
+      activities: "Which activities are driving most volume, and how are they performing?",
+    },
   },
   auth: {
     login:          "Sign in",
@@ -174,9 +189,20 @@ export const en: Dict = {
     search:   "Search",
     live:     "Live",
     refresh:  "Refresh data",
+    switchLanguage: "Switch language",
     active:   "Active",
     inactive: "Inactive",
     loadingSession: "Loading session…",
     sessionNotFound: "Session not found",
+  },
+  conversation: {
+    transcript:      "Conversational transcript",
+    aiScenario:      "AI scenario",
+    advisorResponse: "Advisor response",
+    aiFeedback:      "AI feedback",
+    points:          "Points",
+    notApplicable:   "N/A",
+    passed:          "Passed",
+    failed:          "Failed",
   },
 } as const;

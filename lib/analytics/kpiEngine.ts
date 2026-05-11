@@ -1,7 +1,5 @@
-import { differenceInDays, startOfDay } from "date-fns";
 import type {
   NormalizedSimulation,
-  NormalizedActivity,
   FilterState,
   KPISummary,
   ActivityKPI,
@@ -12,6 +10,8 @@ import type {
   LeaderboardEntry,
   HeatmapCell,
 } from "@/types/analytics";
+
+type Locale = "es" | "en";
 
 // ---- Filter application ------------------------------------------------------
 
@@ -122,12 +122,21 @@ export function computeUserKPIs(sims: NormalizedSimulation[]): UserKPI[] {
 // ---- Interaction KPIs --------------------------------------------------------
 
 export function computeInteractionKPIs(sims: NormalizedSimulation[]): InteractionKPI[] {
+  return computeInteractionKPIsLocalized(sims, "es");
+}
+
+export function computeInteractionKPIsLocalized(
+  sims: NormalizedSimulation[],
+  locale: Locale,
+): InteractionKPI[] {
+  const prefix = locale === "en" ? "Interaction" : "Interacción";
+
   return [1, 2, 3, 4, 5, 6].map((i) => {
     const applicable = sims.filter((s) => s.rounds[i - 1]?.applicable);
     const passed = applicable.filter((s) => s.rounds[i - 1]?.score === 1);
     return {
       roundIndex: i,
-      label: `Interacción ${i}`,
+      label: `${prefix} ${i}`,
       passRate: applicable.length ? passed.length / applicable.length : 0,
       avgScore: applicable.length ? avg(applicable.map((s) => s.rounds[i - 1].score!)) : 0,
       totalApplicable: applicable.length,
@@ -139,6 +148,13 @@ export function computeInteractionKPIs(sims: NormalizedSimulation[]): Interactio
 // ---- Trend Data --------------------------------------------------------------
 
 export function computeMonthlyTrend(sims: NormalizedSimulation[]): TrendDataPoint[] {
+  return computeMonthlyTrendLocalized(sims, "es");
+}
+
+export function computeMonthlyTrendLocalized(
+  sims: NormalizedSimulation[],
+  locale: Locale,
+): TrendDataPoint[] {
   const map = new Map<string, NormalizedSimulation[]>();
   for (const s of sims) {
     if (!map.has(s.monthKey)) map.set(s.monthKey, []);
@@ -148,9 +164,13 @@ export function computeMonthlyTrend(sims: NormalizedSimulation[]): TrendDataPoin
   return Array.from(map.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, periodSims]) => {
-      const [year, month] = key.split("-");
-      const monthNames = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-      const label = `${monthNames[Number(month) - 1]} ${year}`;
+      const [yearStr, monthStr] = key.split("-");
+      const year = Number(yearStr);
+      const monthIndex = Number(monthStr) - 1;
+      const dt = new Date(year, monthIndex, 1);
+
+      const lang = locale === "en" ? "en-US" : "es-MX";
+      const label = new Intl.DateTimeFormat(lang, { month: "short", year: "numeric" }).format(dt);
       return {
         period: key,
         label,

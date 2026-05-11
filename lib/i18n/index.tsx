@@ -47,11 +47,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  // Sync on mount in case SSR defaulted differently
+  // Keep <html lang> aligned to the in-app locale (accessibility + AI consistency)
   useEffect(() => {
-    const stored = readStoredLocale();
-    if (stored !== locale) setLocaleState(stored);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (typeof document === "undefined") return;
+    document.documentElement.lang = locale;
+    document.documentElement.setAttribute("translate", "no");
+  }, [locale]);
 
   return (
     <I18nContext.Provider

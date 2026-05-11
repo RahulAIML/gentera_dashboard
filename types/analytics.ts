@@ -184,6 +184,7 @@ export interface GenteraHierarchy {
   unsupervisedAdmins: AdminNode[];       // admins whose parent isn't a supervisor
   byAdminId: Map<number, AdminNode>;
   bySupervisorId: Map<number, SupervisorNode>;
+  orphanParticipants: NormalizedMember[]; // members whose admin isn't found
   totals: {
     supervisors: number;
     admins: number;

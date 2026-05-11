@@ -1,6 +1,6 @@
 "use client";
 import { create } from "zustand";
-import { subMonths, startOfDay, endOfDay } from "date-fns";
+import { subMonths, endOfDay } from "date-fns";
 import type { FilterState } from "@/types/analytics";
 
 interface FilterStore extends FilterState {
@@ -26,7 +26,7 @@ const DEFAULT: FilterState = {
 export const useFilterStore = create<FilterStore>((set) => ({
   ...DEFAULT,
   setDateRange: (start, end) =>
-    set((s) => ({ dateRange: { start, end } })),
+    set({ dateRange: { start, end } }),
   setActivityIds: (ids) => set({ activityIds: ids }),
   setUserName: (name) => set({ userName: name }),
   setMinScore: (score) => set({ minScore: score }),

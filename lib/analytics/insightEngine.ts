@@ -1,84 +1,187 @@
-import type { NormalizedSimulation, AIInsight, InteractionKPI, ActivityKPI, UserKPI } from "@/types/analytics";
+import type {
+  NormalizedSimulation,
+  AIInsight,
+  InteractionKPI,
+  ActivityKPI,
+  UserKPI,
+} from "@/types/analytics";
+
+type Locale = "es" | "en";
 
 let insightCounter = 0;
-function id() { return `insight-${++insightCounter}`; }
+function id() {
+  insightCounter += 1;
+  return `insight-${insightCounter}`;
+}
+
+function pct0(n: number) {
+  return (n * 100).toFixed(0);
+}
 
 export function generateInsights(
   sims: NormalizedSimulation[],
   interactionKPIs: InteractionKPI[],
   activityKPIs: ActivityKPI[],
-  userKPIs: UserKPI[]
+  userKPIs: UserKPI[],
+  locale: Locale,
 ): AIInsight[] {
   const insights: AIInsight[] = [];
   if (!sims.length) return insights;
 
+  const copy =
+    locale === "en"
+      ? {
+          lowestPassTitle: (label: string) => `${label} has the lowest pass rate`,
+          lowestPassDesc: (pct: string) =>
+            `Only ${pct}% of advisors pass this interaction. This is the biggest coaching leverage point in the conversational flow.`,
+          passRateMetric: (pct: string) => `${pct}% pass rate`,
+
+          bestPassTitle: (label: string) => `${label} stands out with strong performance`,
+          bestPassDesc: (pct: string) =>
+            `${pct}% of advisors pass this interaction. Use it as a reference pattern for earlier rounds.`,
+
+          overallLowTitle: "Overall pass rate is below threshold",
+          overallLowDesc: (pct: string) =>
+            `Only ${pct}% of simulations end with a passing diagnosis. Prioritize reinforcement of the weakest interaction(s).`,
+          overallHighTitle: "Overall pass rate is strong",
+          overallHighDesc: (pct: string) =>
+            `${pct}% of simulations end with a passing diagnosis, indicating effective training for the current scope.`,
+          overallMetric: (pct: string) => `${pct}% passed`,
+
+          concentrationTitle: (name: string) => `High concentration in “${name}”`,
+          concentrationDesc: (topName: string, topPct: string, bottomName: string) =>
+            `“${topName}” represents ${topPct}% of simulations. Activities like “${bottomName}” show very low adoption.`,
+
+          topUserTitle: (user: string) => `${user} leads the performance ranking`,
+          topUserDesc: (avg: string, simsCount: number) =>
+            `With an average score of ${avg}% across ${simsCount} simulations, this advisor is the top performer in the current period.`,
+          avgMetric: (avg: string) => `${avg}% avg`,
+
+          lowEngagementTitle: "High share of users with low engagement",
+          lowEngagementDesc: (pct: string) =>
+            `${pct}% of active users completed only 1 simulation. Consider a re-engagement routine and manager nudges.`,
+          usersMetric: (n: number) => `${n} users`,
+
+          scoreUpTitle: "Average score is trending up",
+          scoreDownTitle: "Average score is trending down",
+          scoreUpDesc: (deltaAbs: string) => `Average score increased by ${deltaAbs} points vs last month.`,
+          scoreDownDesc: (deltaAbs: string) =>
+            `Average score decreased by ${deltaAbs} points vs last month. Review activity mix, coaching coverage, and diagnosis outcomes.`,
+          pointsMetric: (deltaAbs: string) => `${deltaAbs} pts`,
+        }
+      : {
+          lowestPassTitle: (label: string) => `${label} con la tasa de aprobación más baja`,
+          lowestPassDesc: (pct: string) =>
+            `Solo el ${pct}% de los asesores superan esta interacción. Representa la mayor oportunidad de mejora en el flujo conversacional.`,
+          passRateMetric: (pct: string) => `${pct}% aprobación`,
+
+          bestPassTitle: (label: string) => `${label} destaca con alto rendimiento`,
+          bestPassDesc: (pct: string) =>
+            `El ${pct}% de los asesores domina esta interacción. Puede usarse como referencia de entrenamiento para otras etapas.`,
+
+          overallLowTitle: "Tasa de aprobación global por debajo del umbral",
+          overallLowDesc: (pct: string) =>
+            `Solo el ${pct}% de las simulaciones concluyen con diagnóstico aprobatorio. Se recomienda revisión y refuerzo enfocado en las interacciones más débiles.`,
+          overallHighTitle: "Tasa de aprobación global en niveles óptimos",
+          overallHighDesc: (pct: string) =>
+            `El ${pct}% de las simulaciones obtienen diagnóstico aprobatorio, indicando un entrenamiento efectivo para el alcance actual.`,
+          overallMetric: (pct: string) => `${pct}% aprobados`,
+
+          concentrationTitle: (name: string) => `Concentración alta en “${name}”`,
+          concentrationDesc: (topName: string, topPct: string, bottomName: string) =>
+            `“${topName}” concentra el ${topPct}% de todas las simulaciones. Actividades como “${bottomName}” tienen muy poca adopción.`,
+
+          topUserTitle: (user: string) => `${user} lidera el ranking de desempeño`,
+          topUserDesc: (avg: string, simsCount: number) =>
+            `Con un promedio de ${avg}% y ${simsCount} simulaciones completadas, es el asesor con mayor rendimiento del período.`,
+          avgMetric: (avg: string) => `${avg}% promedio`,
+
+          lowEngagementTitle: "Alto porcentaje de usuarios con baja participación",
+          lowEngagementDesc: (pct: string) =>
+            `El ${pct}% de los usuarios activos completaron solo 1 simulación. Implementar estrategias de re-enganche.`,
+          usersMetric: (n: number) => `${n} usuarios`,
+
+          scoreUpTitle: "Puntaje promedio en tendencia positiva",
+          scoreDownTitle: "Puntaje promedio en declive",
+          scoreUpDesc: (deltaAbs: string) =>
+            `El puntaje promedio aumentó ${deltaAbs} puntos respecto al mes anterior.`,
+          scoreDownDesc: (deltaAbs: string) =>
+            `El puntaje promedio cayó ${deltaAbs} puntos respecto al mes anterior. Revisar mezcla de actividades, cobertura de coaching y diagnósticos.`,
+          pointsMetric: (deltaAbs: string) => `${deltaAbs} pts`,
+        };
+
   // ---- Lowest-performing interaction ----------------------------------------
   const applicableInteractions = interactionKPIs.filter((i) => i.totalApplicable > 5);
   if (applicableInteractions.length) {
-    const worst = applicableInteractions.reduce((a, b) => a.passRate < b.passRate ? a : b);
+    const worst = applicableInteractions.reduce((a, b) => (a.passRate < b.passRate ? a : b));
     if (worst.passRate < 0.6) {
+      const pct = pct0(worst.passRate);
       insights.push({
         id: id(),
         type: "risk",
         severity: worst.passRate < 0.4 ? "critical" : "warning",
-        title: `${worst.label} con la tasa de aprobación más baja`,
-        description: `Solo el ${(worst.passRate * 100).toFixed(0)}% de los asesores superan esta interacción. Representa la mayor oportunidad de mejora en el flujo conversacional.`,
-        metric: `${(worst.passRate * 100).toFixed(0)}% aprobación`,
+        title: copy.lowestPassTitle(worst.label),
+        description: copy.lowestPassDesc(pct),
+        metric: copy.passRateMetric(pct),
         relatedEntity: worst.label,
       });
     }
   }
 
-  // ---- Best-performing interaction -------------------------------------------
+  // ---- Best-performing interaction ------------------------------------------
   if (applicableInteractions.length) {
-    const best = applicableInteractions.reduce((a, b) => a.passRate > b.passRate ? a : b);
+    const best = applicableInteractions.reduce((a, b) => (a.passRate > b.passRate ? a : b));
     if (best.passRate > 0.8) {
+      const pct = pct0(best.passRate);
       insights.push({
         id: id(),
         type: "achievement",
         severity: "success",
-        title: `${best.label} destaca con alto rendimiento`,
-        description: `El ${(best.passRate * 100).toFixed(0)}% de los asesores domina esta interacción. Puede usarse como referencia de entrenamiento para otras etapas.`,
-        metric: `${(best.passRate * 100).toFixed(0)}% aprobación`,
+        title: copy.bestPassTitle(best.label),
+        description: copy.bestPassDesc(pct),
+        metric: copy.passRateMetric(pct),
         relatedEntity: best.label,
       });
     }
   }
 
-  // ---- Overall pass rate alert -----------------------------------------------
+  // ---- Overall pass-rate alert ----------------------------------------------
   const overallPassRate = sims.filter((s) => s.passed).length / sims.length;
   if (overallPassRate < 0.5) {
+    const pct = pct0(overallPassRate);
     insights.push({
       id: id(),
       type: "anomaly",
       severity: "critical",
-      title: "Tasa de aprobación global por debajo del umbral",
-      description: `Solo el ${(overallPassRate * 100).toFixed(0)}% de las simulaciones concluyen con diagnóstico aprobatorio. Se recomienda revisión urgente del proceso de entrenamiento.`,
-      metric: `${(overallPassRate * 100).toFixed(0)}% aprobados`,
+      title: copy.overallLowTitle,
+      description: copy.overallLowDesc(pct),
+      metric: copy.overallMetric(pct),
     });
   } else if (overallPassRate > 0.75) {
+    const pct = pct0(overallPassRate);
     insights.push({
       id: id(),
       type: "achievement",
       severity: "success",
-      title: "Tasa de aprobación global en niveles óptimos",
-      description: `El ${(overallPassRate * 100).toFixed(0)}% de las simulaciones obtienen diagnóstico aprobatorio, indicando un entrenamiento efectivo.`,
-      metric: `${(overallPassRate * 100).toFixed(0)}% aprobados`,
+      title: copy.overallHighTitle,
+      description: copy.overallHighDesc(pct),
+      metric: copy.overallMetric(pct),
     });
   }
 
-  // ---- Activity engagement drop ----------------------------------------------
+  // ---- Activity concentration ------------------------------------------------
   if (activityKPIs.length >= 2) {
     const sorted = [...activityKPIs].sort((a, b) => b.simulationCount - a.simulationCount);
     const top = sorted[0];
     const bottom = sorted[sorted.length - 1];
     if (top.simulationCount > bottom.simulationCount * 5) {
+      const pct = ((top.simulationCount / sims.length) * 100).toFixed(0);
       insights.push({
         id: id(),
         type: "trend",
         severity: "warning",
-        title: `Concentración alta en "${top.activityName}"`,
-        description: `"${top.activityName}" concentra el ${((top.simulationCount / sims.length) * 100).toFixed(0)}% de todas las simulaciones. Actividades como "${bottom.activityName}" tienen muy poca adopción.`,
+        title: copy.concentrationTitle(top.activityName),
+        description: copy.concentrationDesc(top.activityName, pct, bottom.activityName),
         relatedEntity: bottom.activityName,
       });
     }
@@ -88,13 +191,14 @@ export function generateInsights(
   if (userKPIs.length) {
     const topUser = userKPIs[0];
     if (topUser.averageScore >= 80) {
+      const avg = topUser.averageScore.toFixed(0);
       insights.push({
         id: id(),
         type: "achievement",
         severity: "success",
-        title: `${topUser.userName} lidera el ranking de desempeño`,
-        description: `Con un promedio de ${topUser.averageScore.toFixed(0)}% y ${topUser.simulationCount} simulaciones completadas, es el asesor con mayor rendimiento del período.`,
-        metric: `${topUser.averageScore.toFixed(0)}% promedio`,
+        title: copy.topUserTitle(topUser.userName),
+        description: copy.topUserDesc(avg, topUser.simulationCount),
+        metric: copy.avgMetric(avg),
         relatedEntity: topUser.userName,
       });
     }
@@ -103,13 +207,14 @@ export function generateInsights(
   // ---- Low engagement users --------------------------------------------------
   const singleSimUsers = userKPIs.filter((u) => u.simulationCount === 1);
   if (singleSimUsers.length > userKPIs.length * 0.4) {
+    const pct = ((singleSimUsers.length / userKPIs.length) * 100).toFixed(0);
     insights.push({
       id: id(),
       type: "risk",
       severity: "warning",
-      title: "Alto porcentaje de usuarios con baja participación",
-      description: `El ${((singleSimUsers.length / userKPIs.length) * 100).toFixed(0)}% de los usuarios activos completaron solo 1 simulación. Implementar estrategias de re-enganche.`,
-      metric: `${singleSimUsers.length} usuarios`,
+      title: copy.lowEngagementTitle,
+      description: copy.lowEngagementDesc(pct),
+      metric: copy.usersMetric(singleSimUsers.length),
     });
   }
 
@@ -126,16 +231,16 @@ export function generateInsights(
     const lastAvg = last[1].reduce((a, b) => a + b, 0) / last[1].length;
     const prevAvg = prev[1].reduce((a, b) => a + b, 0) / prev[1].length;
     const delta = lastAvg - prevAvg;
+
     if (Math.abs(delta) > 5) {
+      const deltaAbs = Math.abs(delta).toFixed(1);
       insights.push({
         id: id(),
         type: "trend",
         severity: delta > 0 ? "success" : "warning",
-        title: delta > 0 ? "Puntaje promedio en tendencia positiva" : "Puntaje promedio en declive",
-        description: delta > 0
-          ? `El puntaje promedio aumentó ${delta.toFixed(1)} puntos respecto al mes anterior.`
-          : `El puntaje promedio cayó ${Math.abs(delta).toFixed(1)} puntos respecto al mes anterior. Evaluar factores de desempeño.`,
-        metric: `${delta > 0 ? "+" : ""}${delta.toFixed(1)} pts`,
+        title: delta > 0 ? copy.scoreUpTitle : copy.scoreDownTitle,
+        description: delta > 0 ? copy.scoreUpDesc(deltaAbs) : copy.scoreDownDesc(deltaAbs),
+        metric: `${delta > 0 ? "+" : "-"}${copy.pointsMetric(deltaAbs)}`,
         delta,
       });
     }
@@ -143,3 +248,4 @@ export function generateInsights(
 
   return insights.slice(0, 8);
 }
+

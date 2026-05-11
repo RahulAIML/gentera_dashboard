@@ -3,6 +3,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend, ReferenceLine,
 } from "recharts";
+import type { TooltipContentProps } from "recharts";
 import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
 import type { TrendDataPoint } from "@/types/analytics";
@@ -11,26 +12,37 @@ import type { Dict } from "@/lib/i18n/locales/es";
 
 interface Props { data: TrendDataPoint[]; loading?: boolean; }
 
-function CustomTooltip({ active, payload, label, t }: any) {
+type TrendTooltipProps = TooltipContentProps<number, string> & { t: Dict };
+
+function CustomTooltip({ active, payload, label, t }: TrendTooltipProps) {
   if (!active || !payload?.length) return null;
-  const tt = t as Dict;
   return (
     <div className="bg-surface-750 border border-border-strong rounded-xl p-3.5 shadow-2xl min-w-[190px]">
       <p className="text-xs font-bold text-text-primary mb-2.5 capitalize">{label}</p>
-      {payload.map((p: any) => (
-        <div key={p.dataKey} className="flex items-center justify-between gap-4 text-xs mb-1">
+      {payload.map((p) => {
+        const dataKey = typeof p.dataKey === "string" ? p.dataKey : String(p.dataKey ?? "");
+        const color = p.color ?? "#818cf8";
+        const rawValue = p.value;
+        const num = typeof rawValue === "number" ? rawValue : Number(rawValue);
+        const display = dataKey === "simulations"
+          ? String(Number.isFinite(num) ? num : rawValue ?? "")
+          : `${(Number.isFinite(num) ? num : 0).toFixed(0)}%`;
+
+        return (
+          <div key={dataKey} className="flex items-center justify-between gap-4 text-xs mb-1">
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: color }} />
             <span className="text-text-muted">
-              {p.dataKey === "passRate100" ? tt.charts.passRateLabel :
-               p.dataKey === "averageScore" ? tt.charts.avgScoreLabel : tt.charts.simulationsLabel}
+              {dataKey === "passRate100" ? t.charts.passRateLabel :
+               dataKey === "averageScore" ? t.charts.avgScoreLabel : t.charts.simulationsLabel}
             </span>
           </div>
           <span className="font-mono font-bold text-text-primary">
-            {p.dataKey === "simulations" ? p.value : `${p.value?.toFixed(0)}%`}
+            {display}
           </span>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -104,7 +116,7 @@ export function ScoreTrendChart({ data, loading }: Props) {
             tickLine={false}
             tickFormatter={(v) => `${v}%`}
           />
-          <Tooltip content={<CustomTooltip t={t} />} />
+          <Tooltip content={(props) => <CustomTooltip {...props} t={t} />} />
           <Legend
             wrapperStyle={{ fontSize: 10, color: "#a8aac8", paddingTop: 10 }}
             formatter={(v) =>

@@ -1,6 +1,8 @@
 "use client";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import type { TooltipContentProps } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import type { ActivityKPI } from "@/types/analytics";
 import { fmtPercent } from "@/lib/utils/formatters";
 import { useI18n } from "@/lib/i18n";
@@ -10,19 +12,22 @@ interface Props { data: ActivityKPI[]; loading?: boolean; metric?: "simulationCo
 
 const PALETTE = ["#6366f1","#8b5cf6","#10b981","#60a5fa","#fb7185","#22d3ee","#34d399","#fbbf24","#a78bfa"];
 
-function Tip({ active, payload, t }: any) {
+type TipProps = TooltipContentProps<ValueType, NameType> & { t: Dict };
+
+function Tip({ active, payload, t }: TipProps) {
   if (!active || !payload?.length) return null;
-  const d = payload[0].payload as ActivityKPI & { color: string };
-  const tt = t as Dict;
+  const item = payload[0]?.payload;
+  if (!item || typeof item !== "object") return null;
+  const d = item as ActivityKPI & { color: string };
   return (
     <div className="bg-surface-750 border border-border-strong rounded-xl p-3.5 shadow-2xl max-w-[220px]">
       <p className="text-[11px] font-bold text-text-primary mb-2 leading-snug">{d.activityName}</p>
       <div className="space-y-1 text-xs">
         {[
-          [tt.charts.simulationsLabel, d.simulationCount, "text-brand-400"],
-          [tt.charts.avgScoreLabel, `${d.averageScore.toFixed(0)}%`, "text-blue-400"],
-          [tt.charts.passRateLabel, fmtPercent(d.passRate), "text-emerald-400"],
-          [tt.charts.usersLabel, d.uniqueUsers, "text-violet-400"],
+          [t.charts.simulationsLabel, d.simulationCount, "text-brand-400"],
+          [t.charts.avgScoreLabel, `${d.averageScore.toFixed(0)}%`, "text-blue-400"],
+          [t.charts.passRateLabel, fmtPercent(d.passRate), "text-emerald-400"],
+          [t.charts.usersLabel, d.uniqueUsers, "text-violet-400"],
         ].map(([label, val, cls]) => (
           <div key={String(label)} className="flex justify-between gap-3">
             <span className="text-text-muted">{label}</span>
@@ -75,7 +80,7 @@ export function ActivityChart({ data, loading, metric = "simulationCount" }: Pro
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
           <XAxis type="number" tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis type="category" dataKey="shortName" tick={{ fill: "#a8aac8", fontSize: 10 }} axisLine={false} tickLine={false} width={144} />
-          <Tooltip content={<Tip t={t} />} />
+          <Tooltip<ValueType, NameType> content={(props) => <Tip {...props} t={t} />} />
           <Bar dataKey="val" radius={[0, 6, 6, 0]} maxBarSize={26}>
             {chartData.map((e, i) => (
               <Cell key={i} fill={e.color} fillOpacity={0.9} />

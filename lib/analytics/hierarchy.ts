@@ -26,10 +26,10 @@ export function buildHierarchy(
 
   // Group participants by admin id
   const participantsByAdmin = new Map<number, NormalizedMember[]>();
-  let orphans = 0;
+  const orphanParticipants: NormalizedMember[] = [];
   for (const m of members) {
     if (!adminsById.has(m.adminId)) {
-      orphans++;
+      orphanParticipants.push(m);
       continue;
     }
     const list = participantsByAdmin.get(m.adminId);
@@ -79,19 +79,21 @@ export function buildHierarchy(
   }
 
   // Sort for stable rendering
+  const collator = new Intl.Collator(undefined, { sensitivity: "base" });
   const supervisors = Array.from(supervisorNodes.values()).sort((a, b) =>
-    a.supervisor.name.localeCompare(b.supervisor.name, "es"),
+    collator.compare(a.supervisor.name, b.supervisor.name),
   );
   for (const s of supervisors) {
-    s.admins.sort((a, b) => a.admin.name.localeCompare(b.admin.name, "es"));
+    s.admins.sort((a, b) => collator.compare(a.admin.name, b.admin.name));
   }
-  unsupervised.sort((a, b) => a.admin.name.localeCompare(b.admin.name, "es"));
+  unsupervised.sort((a, b) => collator.compare(a.admin.name, b.admin.name));
 
   return {
     supervisors,
     unsupervisedAdmins: unsupervised,
     byAdminId: adminNodes,
     bySupervisorId: supervisorNodes,
+    orphanParticipants,
     totals: {
       supervisors: supervisors.length,
       admins: adminNodes.size,
@@ -99,7 +101,7 @@ export function buildHierarchy(
         (sum, n) => sum + n.participants.length,
         0,
       ),
-      orphanParticipants: orphans,
+      orphanParticipants: orphanParticipants.length,
     },
   };
 }
@@ -114,6 +116,8 @@ export type RoleScope =
   | { kind: "admin"; adminId: number }              // sees own participants
   | { kind: "participant"; userId: string };        // sees own simulations
 
+type Locale = "es" | "en";
+
 export interface ResolvedScope {
   participantIds: Set<number>;
   participantUserIds: Set<string>;          // lowercased mb_user
@@ -125,6 +129,14 @@ export function resolveScope(
   scope: RoleScope,
   hierarchy: GenteraHierarchy,
 ): ResolvedScope {
+  return resolveScopeLocalized(scope, hierarchy, "es");
+}
+
+export function resolveScopeLocalized(
+  scope: RoleScope,
+  hierarchy: GenteraHierarchy,
+  locale: Locale,
+): ResolvedScope {
   if (scope.kind === "executive") {
     const ids = new Set<number>();
     const users = new Set<string>();
@@ -132,33 +144,46 @@ export function resolveScope(
       for (const id of node.participantIds) ids.add(id);
       for (const u of node.participantUserIds) users.add(u);
     }
+    for (const m of hierarchy.orphanParticipants) {
+      ids.add(m.id);
+      users.add((m.userId ?? "").toLowerCase());
+    }
     return {
       participantIds: ids,
       participantUserIds: users,
-      label: "Vista Ejecutiva",
-      description: `Toda la organización Gentera · ${ids.size} participantes`,
+      label: locale === "en" ? "Executive View" : "Vista Ejecutiva",
+      description:
+        locale === "en"
+          ? `Entire Gentera organization · ${ids.size} participants`
+          : `Toda la organización Gentera · ${ids.size} participantes`,
     };
   }
 
   if (scope.kind === "supervisor") {
     const node = hierarchy.bySupervisorId.get(scope.supervisorId);
-    if (!node) return emptyScope("Supervisor no encontrado");
+    if (!node) return emptyScope(locale, locale === "en" ? "Supervisor not found" : "Supervisor no encontrado");
     return {
       participantIds: new Set(node.participantIds),
       participantUserIds: new Set(node.participantUserIds),
       label: `Supervisor · ${node.supervisor.name}`,
-      description: `${node.admins.length} admins · ${node.participantIds.size} participantes`,
+      description:
+        locale === "en"
+          ? `${node.admins.length} admins · ${node.participantIds.size} participants`
+          : `${node.admins.length} admins · ${node.participantIds.size} participantes`,
     };
   }
 
   if (scope.kind === "admin") {
     const node = hierarchy.byAdminId.get(scope.adminId);
-    if (!node) return emptyScope("Admin no encontrado");
+    if (!node) return emptyScope(locale, locale === "en" ? "Admin not found" : "Admin no encontrado");
     return {
       participantIds: new Set(node.participantIds),
       participantUserIds: new Set(node.participantUserIds),
       label: `Admin · ${node.admin.name}`,
-      description: `${node.participants.length} participantes asignados`,
+      description:
+        locale === "en"
+          ? `${node.participants.length} assigned participants`
+          : `${node.participants.length} participantes asignados`,
     };
   }
 
@@ -167,17 +192,17 @@ export function resolveScope(
   return {
     participantIds: new Set(),
     participantUserIds: new Set([u]),
-    label: `Participante · ${scope.userId}`,
-    description: "Vista personal",
+    label: `${locale === "en" ? "Participant" : "Participante"} · ${scope.userId}`,
+    description: locale === "en" ? "Personal view" : "Vista personal",
   };
 }
 
-function emptyScope(label: string): ResolvedScope {
+function emptyScope(locale: Locale, label: string): ResolvedScope {
   return {
     participantIds: new Set(),
     participantUserIds: new Set(),
     label,
-    description: "Sin acceso",
+    description: locale === "en" ? "No access" : "Sin acceso",
   };
 }
 

@@ -2,7 +2,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { I18nProvider } from "@/lib/i18n";
-import { AIAssistant } from "@/components/ai/AIAssistant";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [client] = useState(
@@ -23,7 +22,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={client}>
       <I18nProvider>
         {children}
-        <AIAssistant />
       </I18nProvider>
     </QueryClientProvider>
   );

@@ -83,9 +83,9 @@ export function KPICard({
 
   if (loading) {
     return (
-      <div className="glass rounded-xl p-5 h-[108px] space-y-3 border border-border">
-        <div className="skeleton h-2.5 w-20 rounded" />
-        <div className="skeleton h-7 w-28 rounded" />
+      <div className="glass rounded-2xl p-6 h-[124px] space-y-3 border border-border">
+        <div className="skeleton h-3 w-28 rounded" />
+        <div className="skeleton h-8 w-36 rounded" />
         <div className="skeleton h-2 w-16 rounded" />
       </div>
     );
@@ -101,7 +101,7 @@ export function KPICard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: index * 0.05, ease: [0.4, 0, 0.2, 1] }}
-      className="glass rounded-xl p-5 relative overflow-hidden card-hover border border-border group cursor-default"
+      className="glass rounded-2xl p-6 relative overflow-hidden card-hover border border-border group cursor-default"
     >
       {/* Subtle ambient tint */}
       <div
@@ -113,20 +113,22 @@ export function KPICard({
 
       <div className="relative">
         <div className="flex items-start justify-between mb-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">{title}</p>
-          <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", th.iconBg)}>
-            <Icon className={cn("w-3.5 h-3.5", th.iconText)} />
+          <p className="text-[12px] font-medium text-text-muted leading-tight">
+            {title}
+          </p>
+          <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", th.iconBg)}>
+            <Icon className={cn("w-4 h-4", th.iconText)} />
           </div>
         </div>
 
         <div className="mb-0.5">
-          <span className="text-2xl font-bold text-text-primary tabular-nums tracking-tight count-enter">
+          <span className="text-[28px] md:text-[30px] font-bold text-text-primary tabular-nums tracking-tight count-enter">
             {value}
           </span>
         </div>
 
         {subtitle && (
-          <p className="text-xs text-text-muted">{subtitle}</p>
+          <p className="text-[12px] text-text-muted mt-1">{subtitle}</p>
         )}
 
         {delta !== undefined && (

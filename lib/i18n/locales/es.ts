@@ -9,6 +9,11 @@ export interface Dict {
     leaderboard:    string;
     org:            string;
     activities:     string;
+    sections: {
+      analytics:     string;
+      performance:   string;
+      organization:  string;
+    };
   };
   kpi: {
     totalSimulations: string;
@@ -19,6 +24,7 @@ export interface Dict {
     totalActivities:  string;
   };
   filters: {
+    title:      string;
     dateRange:  string;
     activities: string;
     diagnosis:  string;
@@ -125,6 +131,15 @@ export interface Dict {
     userAverage:       string;
     sessionHistory:    string;
     rank:              string;
+    assistantIntro:    string;
+    assistantPlaceholder: string;
+    sendMessage:       string;
+    prompts: {
+      kpiSummary: string;
+      trend:      string;
+      riskRound:  string;
+      activities: string;
+    };
   };
   auth: {
     login:          string;
@@ -154,6 +169,7 @@ export interface Dict {
     search:   string;
     live:     string;
     refresh:  string;
+    switchLanguage: string;
     active:   string;
     inactive: string;
     loadingSession: string;
@@ -178,6 +194,16 @@ export interface Dict {
     organization:    string;
     hierarchy:       string;
   };
+  conversation: {
+    transcript:      string;
+    aiScenario:      string;
+    advisorResponse: string;
+    aiFeedback:      string;
+    points:          string;
+    notApplicable:   string;
+    passed:          string;
+    failed:          string;
+  };
 }
 
 export const es: Dict = {
@@ -190,6 +216,11 @@ export const es: Dict = {
     leaderboard:    "Leaderboard",
     org:            "Organización",
     activities:     "Actividades",
+    sections: {
+      analytics:    "Analítica",
+      performance:  "Rendimiento",
+      organization: "Organización",
+    },
   },
   kpi: {
     totalSimulations: "Simulaciones",
@@ -200,6 +231,7 @@ export const es: Dict = {
     totalActivities:  "Actividades",
   },
   filters: {
+    title:      "Filtros",
     dateRange:  "Rango de fechas",
     activities: "Actividades",
     diagnosis:  "Diagnóstico",
@@ -306,6 +338,15 @@ export const es: Dict = {
     userAverage:       "Promedio del asesor",
     sessionHistory:    "Historial de",
     rank:              "Rango global",
+    assistantIntro:    "Pregunta sobre KPIs, tendencias, riesgos por interacción y oportunidades de coaching. Las respuestas se basan en el alcance y filtros actuales.",
+    assistantPlaceholder: "Pregunta sobre KPIs, tendencias, coaching…",
+    sendMessage:       "Enviar mensaje",
+    prompts: {
+      kpiSummary: "Resume los KPIs clave del periodo y alcance actual.",
+      trend:      "¿Qué tendencia destaca en los últimos periodos y por qué?",
+      riskRound:  "¿Qué interacción representa mayor riesgo y qué debemos reforzar?",
+      activities: "¿Qué actividades concentran más volumen y cómo están rindiendo?",
+    },
   },
   auth: {
     login:          "Iniciar sesión",
@@ -354,9 +395,20 @@ export const es: Dict = {
     search:     "Buscar",
     live:       "En vivo",
     refresh:    "Actualizar datos",
+    switchLanguage: "Cambiar idioma",
     active:     "Activo",
     inactive:   "Inactivo",
     loadingSession: "Cargando sesión…",
     sessionNotFound: "Sesión no encontrada",
+  },
+  conversation: {
+    transcript:      "Transcripción conversacional",
+    aiScenario:      "Escenario IA",
+    advisorResponse: "Respuesta del asesor",
+    aiFeedback:      "Retroalimentación IA",
+    points:          "Puntos",
+    notApplicable:   "N/A",
+    passed:          "Aprobó",
+    failed:          "No aprobó",
   },
 };

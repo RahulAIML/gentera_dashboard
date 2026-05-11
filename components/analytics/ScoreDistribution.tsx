@@ -1,25 +1,29 @@
 "use client";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import type { TooltipContentProps } from "recharts";
 import type { ScoreDistributionBucket } from "@/types/analytics";
 import { useI18n } from "@/lib/i18n";
 import type { Dict } from "@/lib/i18n/locales/es";
 
 const COLORS = ["#fb7185", "#fbbf24", "#818cf8", "#60a5fa", "#34d399"];
 
-function Tip({ active, payload, t }: any) {
+type TipProps = TooltipContentProps<number, string> & { t: Dict };
+
+function Tip({ active, payload, t }: TipProps) {
   if (!active || !payload?.length) return null;
-  const d = payload[0].payload as ScoreDistributionBucket;
-  const tt = t as Dict;
+  const item = payload[0]?.payload;
+  if (!item || typeof item !== "object") return null;
+  const d = item as ScoreDistributionBucket;
   return (
     <div className="bg-surface-750 border border-border-strong rounded-xl p-3 shadow-2xl">
-      <p className="text-[11px] font-bold text-text-primary mb-2">{tt.charts.rangeLabel} {d.range}</p>
+      <p className="text-[11px] font-bold text-text-primary mb-2">{t.charts.rangeLabel} {d.range}</p>
       <div className="flex justify-between gap-4 text-xs">
-        <span className="text-text-muted">{tt.charts.simulationsLabel}</span>
+        <span className="text-text-muted">{t.charts.simulationsLabel}</span>
         <span className="font-mono font-bold text-text-primary">{d.count}</span>
       </div>
       <div className="flex justify-between gap-4 text-xs">
-        <span className="text-text-muted">{tt.charts.percentageLabel}</span>
+        <span className="text-text-muted">{t.charts.percentageLabel}</span>
         <span className="font-mono font-bold text-brand-400">{(d.percentage * 100).toFixed(1)}%</span>
       </div>
     </div>
@@ -55,7 +59,7 @@ export function ScoreDistribution({ data, loading }: { data: ScoreDistributionBu
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
           <XAxis dataKey="range" tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <Tooltip content={<Tip t={t} />} />
+          <Tooltip content={(props) => <Tip {...props} t={t} />} />
           <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={52}>
             {data.map((_, i) => <Cell key={i} fill={COLORS[i]} fillOpacity={0.85} />)}
           </Bar>

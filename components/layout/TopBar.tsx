@@ -55,7 +55,7 @@ export function TopBar({ title, subtitle }: TopBarProps) {
             isFetching > 0 ? "text-brand-400 bg-brand-400" : "text-emerald-400 bg-emerald-400"
           )} />
           <span className="text-[10px] font-medium text-text-muted">
-            {isFetching > 0 ? t.common.loading.replace("…", "") : t.common.live}
+            {isFetching > 0 ? t.common.loading : t.common.live}
           </span>
         </div>
 

@@ -3,23 +3,25 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Brain, User, ChevronRight, Star, AlertTriangle, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { TopBar } from "@/components/layout/TopBar";
+import { PageShell, PageSection } from "@/components/layout/PageShell";
+import { PageActions } from "@/components/layout/PageActions";
+import { FilterBar } from "@/components/layout/FilterBar";
 import { KPICard } from "@/components/analytics/KPICard";
 import { useFilteredSimulations } from "@/hooks/useAnalyticsData";
-import { computeUserKPIs, computeInteractionKPIs, computeActivityKPIs } from "@/lib/analytics/kpiEngine";
-import { generateInsights } from "@/lib/analytics/insightEngine";
+import { computeUserKPIs } from "@/lib/analytics/kpiEngine";
 import { fmtNumber, fmtPercent, initials } from "@/lib/utils/formatters";
 import { cn } from "@/lib/utils/cn";
 import { useI18n } from "@/lib/i18n";
-import type { UserKPI } from "@/types/analytics";
+import type { NormalizedSimulation, UserKPI } from "@/types/analytics";
 
-function UserCoachingCard({ user, index, simulations }: { user: UserKPI; index: number; simulations: any[] }) {
-  const userSims = simulations.filter((s: any) => s.userName === user.userName);
+function UserCoachingCard({ user, index, simulations }: { user: UserKPI; index: number; simulations: NormalizedSimulation[] }) {
+  const { t } = useI18n();
+  const userSims = simulations.filter((s) => s.userName === user.userName);
   const needsCoaching = user.averageScore < 60 || user.passRate < 0.5;
 
   const roundScores = [1, 2, 3, 4, 5].map((i) => {
-    const applicable = userSims.filter((s: any) => s.rounds[i - 1]?.applicable);
-    const passed = applicable.filter((s: any) => s.rounds[i - 1]?.score === 1);
+    const applicable = userSims.filter((s) => s.rounds[i - 1]?.applicable);
+    const passed = applicable.filter((s) => s.rounds[i - 1]?.score === 1);
     return { round: i, passRate: applicable.length ? passed.length / applicable.length : null, applicable: applicable.length };
   });
   const weakestRound = roundScores.filter((r) => r.passRate !== null && r.applicable > 0).sort((a, b) => (a.passRate ?? 1) - (b.passRate ?? 1))[0];
@@ -42,11 +44,13 @@ function UserCoachingCard({ user, index, simulations }: { user: UserKPI; index: 
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-semibold text-text-primary truncate">{user.userName}</span>
             {needsCoaching && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">Coaching</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
+                {t.ai.coaching}
+              </span>
             )}
           </div>
           <div className="flex items-center gap-3 mt-1 text-xs text-text-muted">
-            <span>{user.simulationCount} sims</span>
+            <span>{user.simulationCount} {t.charts.simAbbrev}</span>
             <span className={cn("font-semibold", user.averageScore >= 70 ? "text-emerald-400" : user.averageScore >= 50 ? "text-amber-400" : "text-rose-400")}>
               {user.averageScore.toFixed(0)}%
             </span>
@@ -76,7 +80,7 @@ function UserCoachingCard({ user, index, simulations }: { user: UserKPI; index: 
       {weakestRound && weakestRound.passRate !== null && weakestRound.passRate < 0.7 && (
         <div className="mt-3 px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/15">
           <p className="text-[11px] text-amber-400">
-            <span className="font-semibold">Focus:</span> Int. {weakestRound.round} — {(weakestRound.passRate * 100).toFixed(0)}%
+            <span className="font-semibold">{t.ai.coachingRec}:</span> Int. {weakestRound.round} — {(weakestRound.passRate * 100).toFixed(0)}%
           </p>
         </div>
       )}
@@ -86,7 +90,7 @@ function UserCoachingCard({ user, index, simulations }: { user: UserKPI; index: 
 
 export default function CoachingPage() {
   const { simulations, isLoading } = useFilteredSimulations();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [filter, setFilter] = useState<"all" | "coaching" | "top">("all");
 
   const userKPIs = useMemo(() => computeUserKPIs(simulations), [simulations]);
@@ -100,41 +104,52 @@ export default function CoachingPage() {
   }, [filter, userKPIs, needsCoaching, topPerformers]);
 
   return (
-    <div className="min-h-full bg-surface-950">
-      <TopBar title={t.nav.coaching} subtitle={t.scope.organization} />
-
-      <div className="p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto">
-        {/* KPIs */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-          <KPICard title={t.kpi.uniqueUsers} value={fmtNumber(userKPIs.length)} icon={User} accent="blue" index={0} loading={isLoading} />
-          <KPICard title={t.ai.coaching} value={fmtNumber(needsCoaching.length)} subtitle={fmtPercent(userKPIs.length ? needsCoaching.length / userKPIs.length : 0)} icon={AlertTriangle} accent="amber" index={1} loading={isLoading} />
-          <KPICard title={t.ai.performance} value={fmtNumber(topPerformers.length)} icon={Star} accent="emerald" index={2} loading={isLoading} />
-          <KPICard title={t.ai.insights} value={fmtNumber(userKPIs.length ? userKPIs.filter((u) => u.simulationCount >= 3).length : 0)} icon={Brain} accent="violet" index={3} loading={isLoading} />
+    <PageShell
+      title={t.nav.coaching}
+      subtitle={t.scope.organization}
+      actions={<PageActions />}
+      filters={<FilterBar />}
+    >
+      <PageSection variant="bare">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <KPICard title={t.kpi.uniqueUsers} value={fmtNumber(userKPIs.length, locale)} icon={User} accent="blue" index={0} loading={isLoading} />
+          <KPICard title={t.ai.coaching} value={fmtNumber(needsCoaching.length, locale)} subtitle={fmtPercent(userKPIs.length ? needsCoaching.length / userKPIs.length : 0)} icon={AlertTriangle} accent="amber" index={1} loading={isLoading} />
+          <KPICard title={t.ai.performance} value={fmtNumber(topPerformers.length, locale)} icon={Star} accent="emerald" index={2} loading={isLoading} />
+          <KPICard title={t.ai.insights} value={fmtNumber(userKPIs.length ? userKPIs.filter((u) => u.simulationCount >= 3).length : 0, locale)} icon={Brain} accent="violet" index={3} loading={isLoading} />
         </div>
+      </PageSection>
 
-        {/* Filter tabs */}
-        <div className="flex items-center gap-2">
-          {(["all", "coaching", "top"] as const).map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={cn(
-                "text-xs px-3 py-1.5 rounded-lg border transition-all",
-                filter === f ? "bg-brand-500/10 border-brand-500/40 text-brand-400" : "border-border text-text-muted hover:border-border-strong"
-              )}
-            >
-              {f === "all" ? `${t.filters.all} (${userKPIs.length})` : f === "coaching" ? `Coaching (${needsCoaching.length})` : `Top (${topPerformers.length})`}
-            </button>
-          ))}
-        </div>
-
-        {/* User cards */}
+      <PageSection
+        variant="bare"
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            {(["all", "coaching", "top"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={cn(
+                  "h-9 px-3 rounded-xl border transition-colors text-[12px] font-medium",
+                  filter === f
+                    ? "bg-brand-500/10 border-brand-500/25 text-text-primary"
+                    : "border-border bg-surface-900/40 text-text-secondary hover:bg-surface-800/60"
+                )}
+              >
+                {f === "all"
+                  ? `${t.filters.all} (${userKPIs.length})`
+                  : f === "coaching"
+                  ? `${t.ai.coaching} (${needsCoaching.length})`
+                  : `${t.ai.performance} (${topPerformers.length})`}
+              </button>
+            ))}
+          </div>
+        }
+      >
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-xl p-4 border border-border bg-surface-900/60 h-28">
+              <div key={i} className="rounded-2xl p-4 border border-border bg-surface-900/60 h-28">
                 <div className="flex gap-3">
-                  <div className="skeleton w-9 h-9 rounded-lg" />
+                  <div className="skeleton w-9 h-9 rounded-xl" />
                   <div className="flex-1 space-y-2">
                     <div className="skeleton h-3 w-32 rounded" />
                     <div className="skeleton h-2 w-48 rounded" />
@@ -144,8 +159,8 @@ export default function CoachingPage() {
             ))}
           </div>
         ) : displayed.length === 0 ? (
-          <div className="rounded-xl p-8 border border-border bg-surface-900/60 text-center">
-            <CheckCircle className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+          <div className="rounded-2xl p-10 border border-border bg-surface-900/60 text-center">
+            <CheckCircle className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
             <p className="text-sm text-text-muted">{t.common.noData}</p>
           </div>
         ) : (
@@ -155,7 +170,7 @@ export default function CoachingPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </PageSection>
+    </PageShell>
   );
 }
