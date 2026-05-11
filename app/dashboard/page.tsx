@@ -1,139 +1,274 @@
 "use client";
-import { useMemo } from "react";
-import { Users, BarChart3, TrendingUp, Target, Calendar, BookOpen, Trophy } from "lucide-react";
-import Link from "next/link";
-import { PageShell, PageSection, PageEmpty } from "@/components/layout/PageShell";
-import { PageActions } from "@/components/layout/PageActions";
+import { 
+  TrendingUp, 
+  Users, 
+  Target, 
+  Calendar, 
+  BookOpen, 
+  Brain,
+  ArrowUpRight,
+  Activity,
+  Eye,
+  Trophy
+} from "lucide-react";
+import { ExecutiveLayout, ExecutiveSection, ExecutiveGrid, ExecutiveMetricRow } from "@/components/layout/ExecutiveLayout";
+import { ExecutiveKPICard } from "@/components/analytics/ExecutiveKPICard";
+import { ExecutiveTrendChart } from "@/components/charts/ExecutiveTrendChart";
+import { ExecutiveFunnelChart } from "@/components/charts/ExecutiveFunnelChart";
 import { FilterBar } from "@/components/layout/FilterBar";
-import { KPICard } from "@/components/analytics/KPICard";
-import { ScoreTrendChart } from "@/components/analytics/ScoreTrendChart";
-import { InsightsPanel } from "@/components/analytics/AIInsightCard";
-import { ActivityChart } from "@/components/analytics/ActivityChart";
-import { useFilteredSimulations, useHierarchy } from "@/hooks/useAnalyticsData";
-import {
-  computeKPISummary,
-  computeMonthlyTrendLocalized,
-  computeLeaderboard,
-  computeActivityKPIs,
-  computeInteractionKPIsLocalized,
-  computeUserKPIs,
-} from "@/lib/analytics/kpiEngine";
-import { generateInsights } from "@/lib/analytics/insightEngine";
-import { fmtNumber, fmtPercent } from "@/lib/utils/formatters";
+import { PageActions } from "@/components/layout/PageActions";
+import { ExecutiveSidebar } from "@/components/layout/ExecutiveSidebar";
+import { ExecutiveAIAssistant } from "@/components/ai/ExecutiveAIAssistant";
+import { useOptimizedData, useOptimizedFormatters } from "@/hooks/useOptimizedData";
+import { useHierarchy } from "@/hooks/useAnalyticsData";
 import { useI18n } from "@/lib/i18n";
+import { cn } from "@/lib/utils/cn";
+import { PerformanceMonitor } from "@/components/performance/PerformanceMonitor";
 
 export default function ExecutiveOverviewPage() {
-  const { simulations, isLoading } = useFilteredSimulations();
   const hierarchy = useHierarchy();
   const { t, locale } = useI18n();
-
-  const kpis = useMemo(() => computeKPISummary(simulations, []), [simulations]);
-  const trend = useMemo(() => computeMonthlyTrendLocalized(simulations, locale), [simulations, locale]);
-  const leaderboard = useMemo(() => computeLeaderboard(simulations), [simulations]);
-  const activityKPIs = useMemo(() => computeActivityKPIs(simulations), [simulations]);
-  const interactionKPIs = useMemo(() => computeInteractionKPIsLocalized(simulations, locale), [simulations, locale]);
-  const userKPIs = useMemo(() => computeUserKPIs(simulations), [simulations]);
-  const insights = useMemo(
-    () => generateInsights(simulations, interactionKPIs, activityKPIs, userKPIs, locale),
-    [simulations, interactionKPIs, activityKPIs, userKPIs, locale],
-  );
-
-  const topUsers = leaderboard.slice(0, 5);
+  const { formatNumber, formatPercent } = useOptimizedFormatters();
+  
+  const {
+    simulations,
+    isLoading,
+    kpis,
+    trend,
+    activityKPIs,
+    interactionKPIs,
+    userKPIs,
+    topPerformers,
+    criticalInsights,
+  } = useOptimizedData(locale);
 
   return (
-    <PageShell
-      title={t.nav.dashboard}
-      subtitle={t.scope.organization}
-      actions={<PageActions />}
+    <ExecutiveLayout
+      sidebar={<ExecutiveSidebar />}
       filters={<FilterBar />}
+      actions={<PageActions />}
+      aiAssistant={<ExecutiveAIAssistant />}
     >
-      {/* Primary KPIs */}
-      <PageSection variant="bare">
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-4">
-          <KPICard title={t.kpi.totalSimulations} value={fmtNumber(kpis.totalSimulations, locale)} icon={BarChart3} accent="brand" loading={isLoading} index={0} />
-          <KPICard title={t.kpi.uniqueUsers} value={fmtNumber(kpis.uniqueUsers, locale)} icon={Users} accent="blue" loading={isLoading} index={1} />
-          <KPICard title={t.kpi.avgScore} value={`${kpis.averageScore.toFixed(0)}%`} icon={TrendingUp} accent="violet" loading={isLoading} index={2} />
-          <KPICard title={t.kpi.passRate} value={fmtPercent(kpis.passRate)} icon={Target} accent="emerald" loading={isLoading} index={3} />
-          <KPICard title={t.kpi.totalActivities} value={fmtNumber(kpis.totalActivities, locale)} icon={BookOpen} accent="cyan" loading={isLoading} index={4} />
-          <KPICard title={t.kpi.activeDays} value={fmtNumber(kpis.activeDays, locale)} icon={Calendar} accent="amber" loading={isLoading} index={5} />
-        </div>
-      </PageSection>
+      {/* Executive Summary */}
+      <ExecutiveSection
+        title={t.nav.dashboard}
+        subtitle="Conversational Intelligence Overview"
+        size="full"
+      >
+        {/* Primary KPIs - Executive Focus */}
+        <ExecutiveMetricRow>
+          <ExecutiveKPICard
+            title={t.kpi.totalSimulations}
+            value={formatNumber(kpis.totalSimulations, locale)}
+            icon={Activity}
+            accent="brand"
+            loading={isLoading}
+            index={0}
+            delta={kpis.trend.simulationsDelta}
+            trend={kpis.trend.simulationsDelta > 0 ? "up" : kpis.trend.simulationsDelta < 0 ? "down" : "neutral"}
+          />
+          <ExecutiveKPICard
+            title={t.kpi.uniqueUsers}
+            value={formatNumber(kpis.uniqueUsers, locale)}
+            icon={Users}
+            accent="emerald"
+            loading={isLoading}
+            index={1}
+            delta={0}
+            trend="neutral"
+          />
+          <ExecutiveKPICard
+            title={t.kpi.averageScore}
+            value={kpis.averageScore.toFixed(1)}
+            icon={Target}
+            accent="amber"
+            loading={isLoading}
+            index={2}
+            delta={kpis.trend.scoreDelta}
+            trend={kpis.trend.scoreDelta > 0 ? "up" : kpis.trend.scoreDelta < 0 ? "down" : "neutral"}
+          />
+          <ExecutiveKPICard
+            title={t.kpi.passRate}
+            value={formatPercent(kpis.passRate, locale)}
+            icon={TrendingUp}
+            accent="rose"
+            loading={isLoading}
+            index={3}
+            delta={kpis.trend.passRateDelta}
+            trend={kpis.trend.passRateDelta > 0 ? "up" : kpis.trend.passRateDelta < 0 ? "down" : "neutral"}
+          />
+        </ExecutiveMetricRow>
+      </ExecutiveSection>
 
-      {/* Primary visualization + AI insights */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2">
-          <ScoreTrendChart data={trend} loading={isLoading} />
-        </div>
-        <InsightsPanel insights={insights} loading={isLoading} />
-      </div>
+      {/* Performance Analytics */}
+      <ExecutiveSection
+        title="Performance Analytics"
+        subtitle="Trends and interaction patterns"
+      >
+        <ExecutiveGrid cols={2} gap="lg">
+          {/* Monthly Trend */}
+          <ExecutiveTrendChart
+            data={trend}
+            metric="simulations"
+            title="Monthly Trend"
+            subtitle="Simulation volume over time"
+            showArea={true}
+            accentColor="brand"
+          />
 
-      {/* Secondary insights */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <PageSection
-          title={t.scope.hierarchy}
-          description={t.scope.organization}
-        >
-          {!hierarchy ? (
-            <PageEmpty message={t.common.loading} />
-          ) : (
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: t.scope.supervisors, value: hierarchy.totals.supervisors },
-                { label: t.scope.admins, value: hierarchy.totals.admins },
-                { label: t.scope.participants, value: hierarchy.totals.participants },
-              ].map((s) => (
-                <div key={s.label} className="rounded-xl border border-border bg-surface-800/40 p-4">
-                  <div className="text-[12px] text-text-muted">{s.label}</div>
-                  <div className="text-[22px] font-bold text-text-primary tabular-nums mt-1">
-                    {fmtNumber(s.value, locale)}
-                  </div>
-                </div>
-              ))}
+          {/* Interaction Funnel */}
+          <ExecutiveFunnelChart
+            data={interactionKPIs}
+            title="Interaction Funnel"
+            subtitle="Pass rates by conversation round"
+            showThreshold={true}
+            threshold={70}
+          />
+        </ExecutiveGrid>
+      </ExecutiveSection>
+
+      {/* Critical Insights */}
+      <ExecutiveSection
+        title="Critical Insights"
+        subtitle="AI-powered analysis and recommendations"
+      >
+        <ExecutiveGrid cols={3} gap="lg">
+          {/* Critical Insights */}
+          <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/60 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-surface-50">Critical Insights</h3>
+              <Brain className="w-5 h-5 text-brand-400" />
             </div>
-          )}
-        </PageSection>
-
-        <PageSection title={t.charts.leaderboard} description={t.charts.leaderboardSub}>
-          {isLoading ? (
-            <div className="space-y-2.5">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="skeleton h-10 rounded-xl" />
-              ))}
-            </div>
-          ) : topUsers.length === 0 ? (
-            <PageEmpty />
-          ) : (
-            <div className="space-y-2">
-              {topUsers.map((u) => (
-                <Link
-                  key={u.userName}
-                  href="/dashboard/leaderboard"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:border-border hover:bg-surface-800/50 transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-300">
-                    <Trophy className="w-4 h-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[13px] font-medium text-text-primary truncate">{u.userName}</div>
-                    <div className="text-[11px] text-text-muted">
-                      {u.simulations} {t.charts.simAbbrev}
+            <div className="space-y-3">
+              {criticalInsights.length > 0 ? (
+                criticalInsights.map((insight, index) => (
+                  <div key={insight.id} className="p-3 rounded-xl bg-surface-900/60 border border-surface-700/50">
+                    <div className="flex items-start gap-3">
+                      <div className={cn(
+                        "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
+                        insight.severity === "critical" ? "bg-rose-500" : "bg-amber-500"
+                      )} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-surface-200 leading-tight mb-1">
+                          {insight.title}
+                        </p>
+                        <p className="text-xs text-surface-400 leading-relaxed line-clamp-2">
+                          {insight.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-[13px] font-semibold text-text-primary tabular-nums">
-                    {u.avgScore.toFixed(0)}%
-                  </div>
-                </Link>
-              ))}
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <Eye className="w-8 h-8 text-surface-600 mx-auto mb-2" />
+                  <p className="text-sm text-surface-400">No critical insights</p>
+                  <p className="text-xs text-surface-500 mt-1">All metrics within normal range</p>
+                </div>
+              )}
             </div>
-          )}
-        </PageSection>
+          </div>
 
-        <ActivityChart
-          data={activityKPIs.slice(0, 8)}
-          loading={isLoading}
-          metric="simulationCount"
-        />
-      </div>
-    </PageShell>
+          {/* Top Performers */}
+          <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/60 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-surface-50">Top Performers</h3>
+              <Trophy className="w-5 h-5 text-amber-400" />
+            </div>
+            <div className="space-y-3">
+              {topPerformers.length > 0 ? (
+                topPerformers.map((user, index) => (
+                  <div key={user.userName} className="flex items-center justify-between p-3 rounded-xl bg-surface-900/60 border border-surface-700/50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-xs font-bold">
+                        {user.rank}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-surface-200">{user.userName}</p>
+                        <p className="text-xs text-surface-400">{user.simulations} simulations</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-emerald-400">{user.avgScore.toFixed(1)}</p>
+                      <p className="text-xs text-surface-400">{formatPercent(user.passRate / 100, locale)}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <Users className="w-8 h-8 text-surface-600 mx-auto mb-2" />
+                  <p className="text-sm text-surface-400">No performers data</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Activity Breakdown */}
+          <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/60 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-surface-50">Activity Breakdown</h3>
+              <BookOpen className="w-5 h-5 text-violet-400" />
+            </div>
+            <div className="space-y-3">
+              {activityKPIs.slice(0, 5).length > 0 ? (
+                activityKPIs.slice(0, 5).map((activity, index) => (
+                  <div key={activity.activityId} className="flex items-center justify-between p-3 rounded-xl bg-surface-900/60 border border-surface-700/50">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-surface-200 truncate">{activity.activityName}</p>
+                      <p className="text-xs text-surface-400">{activity.simulationCount} simulations</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-brand-400">{activity.averageScore.toFixed(1)}</p>
+                      <p className="text-xs text-surface-400">{formatPercent(activity.passRate / 100, locale)}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <BookOpen className="w-8 h-8 text-surface-600 mx-auto mb-2" />
+                  <p className="text-sm text-surface-400">No activity data</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </ExecutiveGrid>
+      </ExecutiveSection>
+
+      {/* Organizational Overview */}
+      <ExecutiveSection
+        title="Organizational Overview"
+        subtitle="Hierarchy and structure analysis"
+      >
+        <ExecutiveGrid cols={3} gap="lg">
+          <ExecutiveKPICard
+            title="Total Activities"
+            value={kpis.totalActivities.toString()}
+            icon={BookOpen}
+            accent="violet"
+            loading={isLoading}
+            index={4}
+          />
+          <ExecutiveKPICard
+            title="Active Days"
+            value={kpis.activeDays.toString()}
+            icon={Calendar}
+            accent="emerald"
+            loading={isLoading}
+            index={5}
+          />
+          <ExecutiveKPICard
+            title="Team Members"
+            value={userKPIs.length.toString()}
+            icon={Users}
+            accent="brand"
+            loading={isLoading}
+            index={6}
+          />
+        </ExecutiveGrid>
+      </ExecutiveSection>
+
+      {/* Performance Monitor (Development Only) */}
+      {process.env.NODE_ENV === 'development' && <PerformanceMonitor />}
+    </ExecutiveLayout>
   );
 }
