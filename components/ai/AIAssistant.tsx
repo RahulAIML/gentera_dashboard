@@ -235,7 +235,7 @@ export function AIAssistant() {
         onClick={() => setOpen(!open)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 right-6 z-40 h-12 px-4 rounded-full bg-brand-500 hover:bg-brand-600 flex items-center justify-center shadow-lg shadow-black/30 text-white transition-colors gap-2"
+        className="fixed bottom-6 right-6 z-40 h-12 px-4 rounded-full bg-brand-500 hover:bg-brand-600 flex items-center justify-center shadow-xl shadow-black/50 text-white transition-all gap-2 border border-brand-600/30"
       >
         <MessageSquare className="w-5 h-5" />
         <span className="text-[12px] font-semibold hidden sm:block">AI</span>
@@ -249,10 +249,10 @@ export function AIAssistant() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "100%", opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 w-[420px] max-w-full h-screen z-50 flex flex-col bg-surface-900 border-l border-border shadow-2xl"
+            className="fixed top-0 right-0 w-[420px] max-w-full h-screen z-50 flex flex-col bg-surface-800 border-l border-border shadow-2xl"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-surface-850/50">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-surface-700/80">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
                   <Sparkles className="w-4 h-4 text-brand-300" />
@@ -270,7 +270,7 @@ export function AIAssistant() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-surface-750/30">
               {messages.length === 0 ? (
                 <div className="space-y-3">
                   <p className="text-[13px] text-text-muted leading-relaxed">
@@ -283,7 +283,7 @@ export function AIAssistant() {
                       <button
                         key={prompt}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full text-left text-[12px] p-3 rounded-xl bg-surface-800/40 hover:bg-surface-800 border border-border/50 text-text-primary transition-colors"
+                        className="w-full text-left text-[12px] p-3 rounded-xl bg-surface-700/60 hover:bg-surface-700 border border-border/70 text-text-primary transition-colors"
                       >
                         {prompt}
                       </button>
@@ -296,8 +296,8 @@ export function AIAssistant() {
                     <div
                       className={`max-w-[320px] px-3.5 py-2.5 rounded-2xl text-[12px] leading-relaxed border ${
                         msg.role === "user"
-                          ? "bg-brand-500/12 text-text-primary border-brand-500/25"
-                          : "bg-surface-800/70 text-text-secondary border-border"
+                          ? "bg-brand-500/20 text-text-primary border-brand-500/40"
+                          : "bg-surface-700/80 text-text-secondary border-border/80"
                       }`}
                     >
                       {msg.text}
@@ -321,7 +321,7 @@ export function AIAssistant() {
             </div>
 
             {/* Input */}
-            <div className="border-t border-border px-5 py-4 space-y-2 bg-surface-900">
+            <div className="border-t border-border px-5 py-4 space-y-2 bg-surface-800/90">
               <div className="flex gap-2">
                 <input
                   value={draft}
@@ -333,7 +333,7 @@ export function AIAssistant() {
                     }
                   }}
                   placeholder={locale === "en" ? "Ask about KPIs, trends, coaching…" : "Pregunta sobre KPIs, tendencias, coaching…"}
-                  className="flex-1 h-10 px-3 rounded-xl bg-surface-800 border border-border text-[12px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-500/40"
+                  className="flex-1 h-10 px-3 rounded-xl bg-surface-700 border border-border/80 text-[12px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-500/60"
                   disabled={streaming}
                 />
                 <button

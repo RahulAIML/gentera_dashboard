@@ -50,7 +50,7 @@ export function ScopeSelector() {
 
   if (!hierarchy || !resolved) {
     return (
-      <div className="h-8 px-3 rounded-lg bg-surface-800/60 border border-border flex items-center gap-2 text-[11px] text-text-disabled">
+      <div className="h-8 px-3 rounded-lg bg-surface-700/60 border border-border/80 flex items-center gap-2 text-[11px] text-text-disabled">
         <Building2 className="w-3.5 h-3.5" />
         {t.common.loading}
       </div>
@@ -73,8 +73,8 @@ export function ScopeSelector() {
         onClick={() => setOpen((o) => !o)}
         className={cn(
           "h-8 px-3 rounded-lg flex items-center gap-2 transition-colors",
-          "bg-surface-800/70 border border-border hover:border-brand-500/40",
-          open && "border-brand-500/50 bg-surface-800",
+          "bg-surface-700/80 border border-border/80 hover:border-brand-500/50",
+          open && "border-brand-500/60 bg-surface-600",
         )}
       >
         <Icon className="w-3.5 h-3.5 text-brand-400" />
@@ -109,7 +109,7 @@ export function ScopeSelector() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.98 }}
               transition={{ duration: 0.15 }}
-              className="absolute top-10 left-0 z-40 w-[360px] rounded-xl bg-surface-850 border border-border shadow-2xl overflow-hidden"
+              className="absolute top-10 left-0 z-40 w-[360px] rounded-xl bg-surface-750 border border-border shadow-2xl overflow-hidden"
             >
               {/* Header */}
               <div className="px-3 py-2.5 border-b border-border">
@@ -123,7 +123,7 @@ export function ScopeSelector() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={t.common.search}
-                    className="w-full h-7 pl-7 pr-2 text-[11px] rounded-md bg-surface-900 border border-border focus:border-brand-500/50 outline-none text-text-primary placeholder:text-text-disabled"
+                    className="w-full h-7 pl-7 pr-2 text-[11px] rounded-md bg-surface-700 border border-border/80 focus:border-brand-500/60 outline-none text-text-primary placeholder:text-text-disabled"
                   />
                 </div>
               </div>
@@ -136,8 +136,8 @@ export function ScopeSelector() {
                   className={cn(
                     "w-full text-left px-2.5 py-2 rounded-lg flex items-center gap-2.5 transition-colors",
                     scope.kind === "executive"
-                      ? "bg-brand-500/10 border border-brand-500/30"
-                      : "hover:bg-surface-800 border border-transparent",
+                      ? "bg-brand-500/15 border border-brand-500/40"
+                      : "hover:bg-surface-700/50 border border-transparent",
                   )}
                 >
                   <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -169,8 +169,8 @@ export function ScopeSelector() {
                             "w-full text-left px-2.5 py-1.5 rounded-md flex items-center gap-2 transition-colors",
                             scope.kind === "supervisor" &&
                               scope.supervisorId === s.supervisor.id
-                              ? "bg-brand-500/10 border border-brand-500/30"
-                              : "hover:bg-surface-800 border border-transparent",
+                              ? "bg-brand-500/15 border border-brand-500/40"
+                              : "hover:bg-surface-700/50 border border-transparent",
                           )}
                         >
                           <Shield className="w-3 h-3 text-violet-400 shrink-0" />
@@ -190,8 +190,8 @@ export function ScopeSelector() {
                             className={cn(
                               "w-full text-left pl-7 pr-2.5 py-1.5 rounded-md flex items-center gap-2 transition-colors",
                               scope.kind === "admin" && scope.adminId === a.admin.id
-                                ? "bg-brand-500/10 border border-brand-500/30"
-                                : "hover:bg-surface-800 border border-transparent",
+                                ? "bg-brand-500/15 border border-brand-500/40"
+                                : "hover:bg-surface-700/50 border border-transparent",
                             )}
                           >
                             <User className="w-3 h-3 text-text-muted shrink-0" />
@@ -221,8 +221,8 @@ export function ScopeSelector() {
                         className={cn(
                           "w-full text-left px-2.5 py-1.5 rounded-md flex items-center gap-2 transition-colors",
                           scope.kind === "admin" && scope.adminId === a.admin.id
-                            ? "bg-brand-500/10 border border-brand-500/30"
-                            : "hover:bg-surface-800 border border-transparent",
+                            ? "bg-brand-500/15 border border-brand-500/40"
+                            : "hover:bg-surface-700/50 border border-transparent",
                         )}
                       >
                         <User className="w-3 h-3 text-text-muted shrink-0" />
