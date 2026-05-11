@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} h-full notranslate`}
       suppressHydrationWarning
     >
-      <body className="h-full min-h-screen bg-surface-900 text-text-primary antialiased">
+      <body className="h-full bg-surface-900 text-text-primary antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

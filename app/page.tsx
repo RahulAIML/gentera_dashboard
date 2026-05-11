@@ -32,7 +32,7 @@ const FEATURES = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-surface-950 text-text-primary overflow-x-hidden">
+    <div className="min-h-screen bg-surface-950 text-text-primary">
       {/* Ambient glows */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div

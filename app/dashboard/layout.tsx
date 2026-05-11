@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { locale } = useI18n();
 
   return (
-    <div className="h-screen bg-surface-950 overflow-hidden">
+    <div className="h-screen bg-surface-950">
       <div className="h-full grid grid-cols-1 lg:grid-cols-[256px_1fr]">
         {/* Desktop sidebar */}
         <div className="hidden lg:block">
@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Dialog.Root>
           </div>
 
-          <main className="flex-1 overflow-y-auto min-w-0">
+          <main className="flex-1 overflow-y-auto min-w-0" style={{ scrollbarGutter: 'stable' }}>
             {children}
           </main>
         </div>

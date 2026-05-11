@@ -31,7 +31,7 @@ export function PageShell({
   const scope = useResolvedScope();
 
   return (
-    <div className="min-h-full bg-surface-950">
+    <div className="min-h-full bg-surface-950 flex flex-col">
       {/* ── Page Header ─────────────────────────────────── */}
       <header className="px-6 md:px-8 pt-8 pb-6 border-b border-border bg-gradient-to-b from-surface-900/40 to-transparent">
         <div className="max-w-[1480px] mx-auto">
@@ -79,7 +79,7 @@ export function PageShell({
       )}
 
       {/* ── Body ────────────────────────────────────────── */}
-      <div className="px-6 md:px-8 py-8">
+      <div className="flex-1 px-6 md:px-8 py-8">
         <div className="max-w-[1480px] mx-auto space-y-8">{children}</div>
       </div>
     </div>
