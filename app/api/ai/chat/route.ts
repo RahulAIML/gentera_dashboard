@@ -91,7 +91,7 @@ function candidateModels(): string[] {
   const list = [
     fromEnv,
     "gemini-2.0-flash",
-    "gemini-1.5-flash",
+    "gemini-2.5-flash",
     "gemini-1.5-pro",
   ].filter(Boolean);
   return Array.from(new Set(list));

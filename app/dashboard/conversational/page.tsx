@@ -113,7 +113,7 @@ export default function ConversationalPage() {
                 <PolarAngleAxis dataKey="subject" tick={{ fill: "#6b6f8e", fontSize: 11 }} />
                 <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: "#6b6f8e", fontSize: 9 }} tickCount={4} />
                 <Radar dataKey="value" stroke="#6366f1" fill="#6366f1" fillOpacity={0.12} strokeWidth={2} />
-                <Tooltip content={(props) => <RadarTooltip {...props} />} />
+                <Tooltip content={(props) => <RadarTooltip {...(props as any)} />} />
               </RadarChart>
             </ResponsiveContainer>
           ) : (

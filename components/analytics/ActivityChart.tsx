@@ -80,7 +80,7 @@ export function ActivityChart({ data, loading, metric = "simulationCount" }: Pro
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
           <XAxis type="number" tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis type="category" dataKey="shortName" tick={{ fill: "#a8aac8", fontSize: 10 }} axisLine={false} tickLine={false} width={144} />
-          <Tooltip<ValueType, NameType> content={(props) => <Tip {...props} t={t} />} />
+          <Tooltip content={(props) => <Tip {...(props as any)} t={t} />} />
           <Bar dataKey="val" radius={[0, 6, 6, 0]} maxBarSize={26}>
             {chartData.map((e, i) => (
               <Cell key={i} fill={e.color} fillOpacity={0.9} />

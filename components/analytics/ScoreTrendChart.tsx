@@ -116,7 +116,7 @@ export function ScoreTrendChart({ data, loading }: Props) {
             tickLine={false}
             tickFormatter={(v) => `${v}%`}
           />
-          <Tooltip content={(props) => <CustomTooltip {...props} t={t} />} />
+          <Tooltip content={(props) => <CustomTooltip {...(props as any)} t={t} />} />
           <Legend
             wrapperStyle={{ fontSize: 10, color: "#a8aac8", paddingTop: 10 }}
             formatter={(v) =>

@@ -59,7 +59,7 @@ export function ScoreDistribution({ data, loading }: { data: ScoreDistributionBu
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
           <XAxis dataKey="range" tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fill: "#6b6f8e", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <Tooltip content={(props) => <Tip {...props} t={t} />} />
+          <Tooltip content={(props) => <Tip {...(props as any)} t={t} />} />
           <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={52}>
             {data.map((_, i) => <Cell key={i} fill={COLORS[i]} fillOpacity={0.85} />)}
           </Bar>
