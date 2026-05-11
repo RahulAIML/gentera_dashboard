@@ -28,7 +28,7 @@ import { PerformanceMonitor } from "@/components/performance/PerformanceMonitor"
 export default function ExecutiveOverviewPage() {
   const hierarchy = useHierarchy();
   const { t, locale } = useI18n();
-  const { formatNumber, formatPercent } = useOptimizedFormatters();
+  const { formatNumber, formatPercentAsNumber } = useOptimizedFormatters();
   
   const {
     simulations,
@@ -89,7 +89,7 @@ export default function ExecutiveOverviewPage() {
           />
           <ExecutiveKPICard
             title={t.kpi.passRate}
-            value={formatPercent(kpis.passRate, locale)}
+            value={formatPercentAsNumber(kpis.passRate)}
             icon={TrendingUp}
             accent="rose"
             loading={isLoading}
@@ -190,7 +190,7 @@ export default function ExecutiveOverviewPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold text-emerald-400">{user.avgScore.toFixed(1)}</p>
-                      <p className="text-xs text-surface-400">{formatPercent(user.passRate / 100, locale)}</p>
+                      <p className="text-xs text-surface-400">{formatPercentAsNumber(user.passRate / 100)}</p>
                     </div>
                   </div>
                 ))
@@ -219,7 +219,7 @@ export default function ExecutiveOverviewPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold text-brand-400">{activity.averageScore.toFixed(1)}</p>
-                      <p className="text-xs text-surface-400">{formatPercent(activity.passRate / 100, locale)}</p>
+                      <p className="text-xs text-surface-400">{formatPercentAsNumber(activity.passRate / 100)}</p>
                     </div>
                   </div>
                 ))
